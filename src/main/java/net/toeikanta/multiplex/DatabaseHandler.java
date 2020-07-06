@@ -16,27 +16,27 @@ public class DatabaseHandler {
 
     public void connect() {
         Connection conn = null;
+        // create databaseFile if it's not exist.
+        File dir = new File(plotVoting.getDataFolder().toString());
+        if(!dir.exists()){
+            dir.mkdirs();
+        }
         try {
-            // create databaseFile if it's not exist.
-            File databaseFile = new File(plotVoting.getDataFolder() +  dbFileName);
-            if(!databaseFile.exists()){
-                databaseFile.mkdirs();
-            }
             // create a connection to the database
-//            String url = "jdbc:sqlite:" + plotVoting.getDataFolder() + dbFileName;
-            String url = "jdbc:sqlite:memory:";
-//            System.out.println(url);
+            Class.forName("org.sqlite.JDBC");
+            String url = "jdbc:sqlite:" + plotVoting.getDataFolder() + dbFileName;
+            Logger.print(url);
             conn = DriverManager.getConnection(url);
-            System.out.println("Connection to SQLite has been established.");
-        } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            Logger.print("Connection to SQLite has been established.");
+        } catch (SQLException | ClassNotFoundException e) {
+            Logger.print(e.getMessage());
         } finally {
             try {
                 if (conn != null) {
                     conn.close();
                 }
             } catch (SQLException ex) {
-                System.out.println(ex.getMessage());
+                Logger.print(ex.getMessage());
             }
         }
     }
