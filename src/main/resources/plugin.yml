@@ -1,6 +1,6 @@
-name: Multiplex
+name: PlotVoting
 version: ${project.version}
-main: net.toeikanta.multiplex.Multiplex
+main: net.toeikanta.multiplex.PlotVoting
 api-version: 1.15
 prefix: PlotVoting
 authors: [ToeiKanta]
