@@ -1,0 +1,14 @@
+name: Multiplex
+version: ${project.version}
+main: net.toeikanta.multiplex.Multiplex
+api-version: 1.15
+prefix: PlotVoting
+authors: [ToeiKanta]
+description: PlotVoting plugin
+
+commands:
+  Pvote:
+    description: add group.
+    usage: /pvote addgroup <name>
+    permission: pvote.addgroup
+    permission-message: You don't have <permission>
