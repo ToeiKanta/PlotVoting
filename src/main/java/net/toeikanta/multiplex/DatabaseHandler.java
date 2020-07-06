@@ -1,10 +1,8 @@
 package net.toeikanta.multiplex;
 
+import javax.xml.crypto.Data;
 import java.io.*;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 public class DatabaseHandler {
     private final String dbFileName = "/database.db";
@@ -47,6 +45,21 @@ public class DatabaseHandler {
             } catch (SQLException ex) {
                 Logger.print(ex.getMessage());
             }
+        }
+    }
+
+    public void addType(String name) {
+        String sql = "INSERT INTO type(name,start_date,closed) VALUES(?,?,?)";
+
+        try (Connection conn = DriverManager.getConnection(connUrl);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setString(1, name);
+            pstmt.setDate(2, new Date(System.currentTimeMillis()));
+            pstmt.setBoolean(3, false);
+            pstmt.executeUpdate();
+            Logger.print("add type '" + name +"' completed");
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
         }
     }
 

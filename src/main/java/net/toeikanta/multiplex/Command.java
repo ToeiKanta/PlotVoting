@@ -10,7 +10,7 @@ public class Command implements CommandExecutor {
     PlotVoting plotVoting;
 
     String pvote = "pvote";
-    String addGroup = "addgroup";
+    String addType = "add";
 
     Command(PlotVoting plotVoting){
         this.plotVoting = plotVoting;
@@ -22,8 +22,9 @@ public class Command implements CommandExecutor {
             Player player = (Player) sender;
             if(player.hasPermission("pvote.admin")){
                 if (label.equalsIgnoreCase(pvote)) {
-                    if (args[0].equalsIgnoreCase(addGroup)) {
-                            sender.sendMessage(ChatColor.YELLOW + "test command worked. " + args[1]);
+                    if (args[0].equalsIgnoreCase(addType)) {
+                        plotVoting.db.addType(args[1]);
+                        sender.sendMessage(ChatColor.YELLOW + "test command worked. " + args[1]);
                     }else {
                         sender.sendMessage("You must provide cmd!");
                     }
