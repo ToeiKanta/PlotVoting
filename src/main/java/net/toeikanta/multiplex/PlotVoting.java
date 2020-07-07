@@ -1,5 +1,8 @@
 package net.toeikanta.multiplex;
 
+import net.toeikanta.multiplex.commands.PV_Command;
+import net.toeikanta.multiplex.events.ClickEvent;
+import net.toeikanta.multiplex.libs.Logger;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class PlotVoting extends JavaPlugin {
@@ -12,6 +15,7 @@ public final class PlotVoting extends JavaPlugin {
         saveDefaultConfig();
         // register command
         this.getCommand("pv").setExecutor(new PV_Command(this));
+        getServer().getPluginManager().registerEvents(new ClickEvent(), this);
         Logger.print("enabled " + getConfig().getString("name") + " plugin!");
         this.db = new DatabaseHandler(this);
     }

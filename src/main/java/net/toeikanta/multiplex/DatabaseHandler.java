@@ -1,9 +1,16 @@
 package net.toeikanta.multiplex;
 
+import net.toeikanta.multiplex.libs.GUI;
+import net.toeikanta.multiplex.libs.Logger;
+import net.toeikanta.multiplex.libs.PlayerLibs;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+
 import java.io.*;
 import java.sql.*;
 
@@ -54,20 +61,33 @@ public class DatabaseHandler {
     }
 
     public void getTopPlotByType(String type_name,Player sender){
-        String sql = "SELECT id,x_pos,y_pos,score,owner_name,type_name FROM plots WHERE type_name = '" + type_name + "' ORDER BY score DESC";
+        String sql = "SELECT * FROM plots WHERE type_name = '" + type_name + "' ORDER BY score DESC";
 
         try (Connection conn = DriverManager.getConnection(connUrl);
              Statement stmt  = conn.createStatement();
              ResultSet rs    = stmt.executeQuery(sql)){
 
+            ItemStack[] topHeads = new ItemStack[45];
+            int i = 0;
             // loop through the result set
             while (rs.next()) {
-                sender.sendMessage("ID: " + rs.getString("id")+" :: "+
-                        rs.getString("x_pos")+","+
-                                rs.getString("y_pos")+ " score:: "+
-                                rs.getString("score") + " owner:: "+ rs.getString("owner_name")
-                        );
+                String owner_name = rs.getString("owner_name");
+                Integer score = rs.getInt("score");
+                Double x_pos = rs.getDouble("x_pos");
+                Double y_pos = rs.getDouble("y_pos");
+                Double z_pos = rs.getDouble("z_pos");
+                String world = rs.getString("world");
+                World w = Bukkit.getWorld(world);
+                Location location = new Location(w,x_pos,y_pos,z_pos);
+                topHeads[i++] = GUI.getTopPlotHead(owner_name, i+1 ,score, location);
+//                sender.sendMessage("ID: " + rs.getString("id")+" :: "+
+//                        rs.getString("x_pos")+","+
+//                                rs.getString("y_pos")+ " score:: "+
+//                                rs.getString("score") + " owner:: "+ rs.getString("owner_name")
+//                        );
             }
+            Inventory top = GUI.getTopPlotGUI(topHeads, sender);
+            sender.openInventory(top);
         } catch (SQLException e) {
             Logger.print(e.getMessage());
         }
@@ -141,7 +161,6 @@ public class DatabaseHandler {
         } catch (SQLException e) {
             Logger.print(e.getMessage());
         }
-
     }
     
     public void plotTp(Integer plot_id, Player sender) {

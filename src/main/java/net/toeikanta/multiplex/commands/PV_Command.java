@@ -1,12 +1,11 @@
-package net.toeikanta.multiplex;
+package net.toeikanta.multiplex.commands;
 
+import net.toeikanta.multiplex.PlotVoting;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
-
-import java.awt.*;
 
 public class PV_Command implements CommandExecutor {
 
@@ -24,7 +23,7 @@ public class PV_Command implements CommandExecutor {
     String removePlot = "remove";
     static String creative_world_name = "plot_world";
 
-    PV_Command(PlotVoting plotVoting){
+    public PV_Command(PlotVoting plotVoting){
         this.plotVoting = plotVoting;
     }
 
