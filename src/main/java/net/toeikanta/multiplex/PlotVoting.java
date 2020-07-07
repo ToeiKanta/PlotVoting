@@ -1,8 +1,8 @@
 package net.toeikanta.multiplex;
 
-import org.bukkit.ChatColor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
+import net.toeikanta.multiplex.commands.PV_Command;
+import net.toeikanta.multiplex.events.ClickEvent;
+import net.toeikanta.multiplex.libs.Logger;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class PlotVoting extends JavaPlugin {
@@ -11,11 +11,13 @@ public final class PlotVoting extends JavaPlugin {
     @Override
     public void onEnable() {
         // Copy the config.yml in the plugin configuration folder if it doesn't exists.
-//        this.saveDefaultConfig();
-        this.getCommand("pv").setExecutor(new Command(this));
-        Logger.print("enabled PlotVoting plugin!");
+        getConfig().options().copyDefaults();
+        saveDefaultConfig();
+        // register command
+        this.getCommand("pv").setExecutor(new PV_Command(this));
+        getServer().getPluginManager().registerEvents(new ClickEvent(this), this);
+        Logger.print("enabled " + getConfig().getString("name") + " plugin!");
         this.db = new DatabaseHandler(this);
-//        this.getCommand("pvote").setExecutor(this);
     }
 
     @Override

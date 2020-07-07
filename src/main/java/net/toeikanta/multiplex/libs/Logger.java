@@ -1,4 +1,4 @@
-package net.toeikanta.multiplex;
+package net.toeikanta.multiplex.libs;
 
 public class Logger {
     public static void print(String text){
