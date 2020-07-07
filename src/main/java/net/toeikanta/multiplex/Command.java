@@ -18,6 +18,7 @@ public class Command implements CommandExecutor {
     String topPlot = "top";
     String votePlot = "vote";
     String plotTP = "tp";
+    String removePlot = "remove";
     static String creative_world_name = "plot_world";
 
     Command(PlotVoting plotVoting){
@@ -51,6 +52,8 @@ public class Command implements CommandExecutor {
                             }else{
                                 player.sendMessage(ChatColor.RED + "คำสั่งนี้ใช้ได้เฉพาะโลกสร้างสรรค์เท่านั้น (creative_world)");
                             }
+                        }else if(args[0].equalsIgnoreCase(removePlot)){
+                            plotVoting.db.removePlot(Integer.parseInt(args[1]),player);
                         }
                     }catch (Exception e){
                         sender.sendMessage(ChatColor.GREEN+"=========== Use this command =========== ");
@@ -60,6 +63,7 @@ public class Command implements CommandExecutor {
                         sender.sendMessage(ChatColor.GREEN+"/pvote " + topPlot + " <type_name> "+ ChatColor.YELLOW +"#show top plot by type");
                         sender.sendMessage(ChatColor.GREEN+"/pvote " + votePlot + " <plot_id> "+ ChatColor.YELLOW +"#vote plot");
                         sender.sendMessage(ChatColor.GREEN+"/pvote " + plotTP + " <plot_id> "+ ChatColor.YELLOW +"#teleport to plot");
+                        sender.sendMessage(ChatColor.GREEN+"/pvote " + removePlot + " <plot_id> "+ ChatColor.YELLOW +"#remove your plot");
                         sender.sendMessage(ChatColor.GREEN+"======================================== ");
                         return false;
                     }

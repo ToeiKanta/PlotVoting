@@ -130,7 +130,20 @@ public class DatabaseHandler {
             return false;
         }
     }
+    public void removePlot(Integer plot_id,Player sender){
+        String sql = "DELETE FROM plots WHERE owner_name = '" + sender.getName() + "' AND id = " + plot_id ;
 
+        try (Connection conn = DriverManager.getConnection(connUrl);
+            Statement stm = conn.createStatement();
+        ){
+            stm.execute(sql);
+            sender.sendMessage(ChatColor.GREEN + "ดำเนินการลบพิกัด ของ " + sender.getName() + " : ไอดี " + plot_id + " สำเร็จ!");
+        } catch (SQLException e) {
+            Logger.print(e.getMessage());
+        }
+
+    }
+    
     public void plotTp(Integer plot_id, Player sender) {
         if (!this.isPlotExist(plot_id)) {
             sender.sendMessage("Plot id invalid.");
@@ -143,11 +156,10 @@ public class DatabaseHandler {
             ResultSet pos = stmt.executeQuery(sql);
             String world = pos.getString("world");
             // บังคับ แค่ creative world เท่านั้น
-            // ลบออกถ้าต้องการให้ไปที่ไหนก็ได้
-            if(!world.equals(Command.creative_world_name)){
-                sender.sendMessage(ChatColor.RED + "ขออภัย ระหว่างนี้ไม่อนุญาตให้วาร์ปไปพื้นที่นี้ได้");
-                return;
-            }
+//            if(!world.equals(Command.creative_world_name)){
+//                sender.sendMessage(ChatColor.RED + "ขออภัย ระหว่างนี้ไม่อนุญาตให้วาร์ปไปพื้นที่นี้ได้");
+//                return;
+//            }
             World w = plotVoting.getServer().getWorld(world);
             Double x_pos = pos.getDouble("x_pos");
             Double y_pos = pos.getDouble("y_pos");

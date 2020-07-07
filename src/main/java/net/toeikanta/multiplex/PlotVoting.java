@@ -11,11 +11,12 @@ public final class PlotVoting extends JavaPlugin {
     @Override
     public void onEnable() {
         // Copy the config.yml in the plugin configuration folder if it doesn't exists.
-//        this.saveDefaultConfig();
+        getConfig().options().copyDefaults();
+        saveDefaultConfig();
+        // register command
         this.getCommand("pv").setExecutor(new Command(this));
-        Logger.print("enabled PlotVoting plugin!");
+        Logger.print("enabled " + getConfig().getString("name") + " plugin!");
         this.db = new DatabaseHandler(this);
-//        this.getCommand("pvote").setExecutor(this);
     }
 
     @Override
