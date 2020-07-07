@@ -17,6 +17,7 @@ import java.io.*;
 import java.sql.*;
 
 public class DatabaseHandler {
+    // ตั้งช่ือไฟล์ database
     private final String dbFileName = "/database.db";
     private PlotVoting plotVoting;
     private String connUrl = "";
@@ -27,6 +28,7 @@ public class DatabaseHandler {
         this.createInitTables();
     }
 
+    //ทำการ connect database ครั้งแรก และ ตรวจสอบว่ามี database อยู่จริงหรือไม่
     public void connect() {
         Connection conn = null;
         // create databaseFile if it's not exist.
@@ -37,11 +39,7 @@ public class DatabaseHandler {
         try {
             // create a connection to the database
             Class.forName("org.sqlite.JDBC");
-                //use this for production
             String url = "jdbc:sqlite:" + plotVoting.getDataFolder() + dbFileName;
-                //use this for test
-//            String url = "jdbc:sqlite:memory:";
-
             this.connUrl = url;
             Logger.print(url);
             conn = DriverManager.getConnection(url);
@@ -62,6 +60,7 @@ public class DatabaseHandler {
         }
     }
 
+    // ดูอันดับ plots จากประเภท
     public void getTopPlotByType(String type_name,Player sender, Integer page_number){
         String sql = "SELECT * FROM plots WHERE type_name = '" + type_name + "' ORDER BY score DESC LIMIT 36 OFFSET " + ((page_number-1) * 36);
 
@@ -92,6 +91,7 @@ public class DatabaseHandler {
         }
     }
 
+    // แสดง Type ทั้งหมด
     public void selectAllType(Player sender){
         String sql = "SELECT * FROM types";
 
@@ -113,6 +113,7 @@ public class DatabaseHandler {
         }
     }
 
+    // ตรวจสอบว่า register plot เกิน limit ต่อคนต่อประเภท หรือยัง
     private Boolean isExceedLimitRegis(String type_name, Player player){
         Integer limit = PlotVoting.plugin.getConfig().getInt("limit_regis_plot");
         try(
@@ -131,6 +132,7 @@ public class DatabaseHandler {
         }
     }
 
+    // สำหรับ register plot กับประเภทนั้นๆ
     public void registerPlot(String type_name, Player sender){
         if(!isTypeExists(type_name)){
             sender.sendMessage(ChatColor.RED + "Type invalid");
@@ -162,6 +164,7 @@ public class DatabaseHandler {
         }
     }
 
+    // ตรวจสอบว่า plot มีอยู่หรือไม่
     private boolean isPlotExist(Integer plot_id){
         //check plot id exist
         String sql = "SELECT COUNT(*) AS count FROM plots WHERE id = " + plot_id;
@@ -180,6 +183,7 @@ public class DatabaseHandler {
         }
     }
 
+    // ตรวจสอบว่า มีประเภท นี้อยู่จริงหรือไม่
     private boolean isTypeExists(String type_name){
         //check plot id exist
         String sql = "SELECT COUNT(*) AS count FROM types WHERE type_name = '" + type_name + "'";
@@ -198,6 +202,7 @@ public class DatabaseHandler {
         }
     }
 
+    // ลบ plot (ใช้ได้เฉพาะ เจ้าของ plot เท่านั้น)
     public void removePlot(Integer plot_id,Player sender){
         String sql = "DELETE FROM plots WHERE owner_name = '" + sender.getName() + "' AND id = " + plot_id ;
 
@@ -210,7 +215,8 @@ public class DatabaseHandler {
             Logger.print(e.getMessage());
         }
     }
-    
+
+    // วาร์ปไปที่ plot นั้นๆ
     public void plotTp(Integer plot_id, Player sender) {
         if (!this.isPlotExist(plot_id)) {
             sender.sendMessage("Plot id invalid.");
@@ -266,6 +272,7 @@ public class DatabaseHandler {
         }
     }
 
+    // โหวดคะแนนให้ plot นั้น
     public void votePlot(Integer plot_id, Player sender){
         if(!this.isPlotExist(plot_id)){
             sender.sendMessage("Plot id invalid.");
@@ -302,6 +309,7 @@ public class DatabaseHandler {
         }
     }
 
+    // เพิ่มประเภท
     public void addType(String type_name, Player sender) {
         String sql = "INSERT INTO types(type_name,start_date,closed) VALUES(?,?,?)";
 
@@ -318,6 +326,7 @@ public class DatabaseHandler {
         }
     }
 
+    // แสดง plot ทั้งหมด ของ player ที่ใช้คำสั่ง
     public void getAllMyPlots(Player sender, Integer page_number){
         try (Connection conn = DriverManager.getConnection(connUrl);
             Statement stmt = conn.createStatement();
@@ -347,6 +356,8 @@ public class DatabaseHandler {
 
         }
     }
+
+    // สร้างตารางเริ่มต้น กรณีที่ตารางยังไม่ถูกสร้างขึ้น
     public void createInitTables(){
         // SQL statement for creating a new table
         String types = "CREATE TABLE IF NOT EXISTS types (\n"

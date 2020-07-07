@@ -14,14 +14,16 @@ public final class PlotVoting extends JavaPlugin {
         // Copy the config.yml in the plugin configuration folder if it doesn't exists.
         getConfig().options().copyDefaults();
         saveDefaultConfig();
-        // register command
+        // register default's command
         getCommand("plotvote").setExecutor(new PV_Command(this));
         getCommand("pv").setExecutor(new PV_Command(this));
         getCommand("pvote").setExecutor(new PV_Command(this));
+        // register admin's command
         getCommand("pva").setExecutor(new PV_Command(this));
-
+        // register ClickEvents listener
         getServer().getPluginManager().registerEvents(new ClickEvent(this), this);
         Logger.print("enabled " + getConfig().getString("name") + " plugin!");
+        // สร้าง หรือ เริ่มเชื่อมต่อ Database
         this.db = new DatabaseHandler(this);
         plugin = this;
     }
