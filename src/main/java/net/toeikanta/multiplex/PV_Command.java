@@ -4,10 +4,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import java.awt.*;
 
-public class Command implements CommandExecutor {
+public class PV_Command implements CommandExecutor {
+
+    Plugin plugin = PlotVoting.getProvidingPlugin(PlotVoting.class);
 
     PlotVoting plotVoting;
 
@@ -21,7 +24,7 @@ public class Command implements CommandExecutor {
     String removePlot = "remove";
     static String creative_world_name = "plot_world";
 
-    Command(PlotVoting plotVoting){
+    PV_Command(PlotVoting plotVoting){
         this.plotVoting = plotVoting;
     }
 
