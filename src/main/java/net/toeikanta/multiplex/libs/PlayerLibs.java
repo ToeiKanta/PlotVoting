@@ -1,12 +1,8 @@
 package net.toeikanta.multiplex.libs;
 
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
-
-import java.util.ArrayList;
 
 public class PlayerLibs {
     public static ItemStack getPlayerHead(String playerName) {

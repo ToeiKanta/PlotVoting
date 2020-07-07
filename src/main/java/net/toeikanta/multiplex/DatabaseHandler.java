@@ -74,17 +74,13 @@ public class DatabaseHandler {
                 String owner_name = rs.getString("owner_name");
                 Integer score = rs.getInt("score");
                 Double x_pos = rs.getDouble("x_pos");
+                Integer plot_id = rs.getInt("id");
                 Double y_pos = rs.getDouble("y_pos");
                 Double z_pos = rs.getDouble("z_pos");
                 String world = rs.getString("world");
                 World w = Bukkit.getWorld(world);
                 Location location = new Location(w,x_pos,y_pos,z_pos);
-                topHeads[i++] = GUI.getTopPlotHead(owner_name, i+1 ,score, location);
-//                sender.sendMessage("ID: " + rs.getString("id")+" :: "+
-//                        rs.getString("x_pos")+","+
-//                                rs.getString("y_pos")+ " score:: "+
-//                                rs.getString("score") + " owner:: "+ rs.getString("owner_name")
-//                        );
+                topHeads[i++] = GUI.getTopPlotHead(owner_name, i ,score, location, plot_id);
             }
             Inventory top = GUI.getTopPlotGUI(topHeads, sender);
             sender.openInventory(top);

@@ -11,17 +11,18 @@ import org.bukkit.inventory.meta.SkullMeta;
 import java.util.ArrayList;
 
 public class GUI {
-    public static ItemStack getTopPlotHead(String playerName,Integer order, Integer score, Location location) {
+    public static ItemStack getTopPlotHead(String playerName,Integer order, Integer score, Location location, Integer plot_id) {
         ItemStack item = PlayerLibs.getPlayerHead(playerName);
         SkullMeta skull = (SkullMeta) item.getItemMeta();
         ArrayList<String> lore = new ArrayList<String>();
+        lore.add(ChatColor.GREEN + "ID " + plot_id);
         lore.add(ChatColor.GREEN + "โลก :: " + location.getWorld().getName());
         lore.add(ChatColor.GREEN + "พิกัด (x,y,z) :: (" + MathLibs.parseDouble(location.getX()) + "," + MathLibs.parseDouble(location.getY()) + "," + MathLibs.parseDouble(location.getZ()) + ")");
-        lore.add(ChatColor.GOLD + "คะแนนที่ได้ " + score.toString() + "คะแนน");
+        lore.add(ChatColor.GOLD + "คะแนนที่ได้ " + score.toString() + " คะแนน");
         lore.add(ChatColor.WHITE + "-----------------------");
         lore.add(ChatColor.YELLOW + "คลิก เพื่อวาร์ปไปพื้นที่");
         skull.setLore(lore);
-        skull.setDisplayName("อันดับ " + order + " โดย " + playerName);
+        skull.setDisplayName("อันดับ " + order + " โดย " + playerName + " id:" + plot_id);
         item.setItemMeta(skull);
         return item;
     }

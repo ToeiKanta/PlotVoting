@@ -15,7 +15,7 @@ public final class PlotVoting extends JavaPlugin {
         saveDefaultConfig();
         // register command
         this.getCommand("pv").setExecutor(new PV_Command(this));
-        getServer().getPluginManager().registerEvents(new ClickEvent(), this);
+        getServer().getPluginManager().registerEvents(new ClickEvent(this), this);
         Logger.print("enabled " + getConfig().getString("name") + " plugin!");
         this.db = new DatabaseHandler(this);
     }
