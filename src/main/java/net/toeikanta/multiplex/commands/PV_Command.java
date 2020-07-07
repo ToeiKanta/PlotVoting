@@ -22,6 +22,7 @@ public class PV_Command implements CommandExecutor {
     String votePlot = "vote";
     String plotTP = "tp";
     String removePlot = "remove";
+    String myPlot = "myplot";
 
     public PV_Command(PlotVoting plotVoting){
         this.plotVoting = plotVoting;
@@ -52,6 +53,8 @@ public class PV_Command implements CommandExecutor {
                         plotVoting.db.votePlot(Integer.parseInt(args[1]),player);
                     }else if(args[0].equalsIgnoreCase(removePlot)){
                         plotVoting.db.removePlot(Integer.parseInt(args[1]),player);
+                    }else if(args[0].equalsIgnoreCase(myPlot)){
+                        plotVoting.db.getAllMyPlots(player);
                     }else{
                         showDescription(player);
                     }

@@ -1,6 +1,5 @@
 package net.toeikanta.multiplex;
 
-import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -14,7 +13,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.awt.*;
 import java.io.*;
 import java.sql.*;
 
@@ -320,6 +318,35 @@ public class DatabaseHandler {
         }
     }
 
+    public void getAllMyPlots(Player sender){
+        try (Connection conn = DriverManager.getConnection(connUrl);
+            Statement stmt = conn.createStatement();
+        ){
+            ResultSet rs = stmt.executeQuery("SELECT * FROM plots WHERE owner_name = '"+sender.getName() + "'");
+
+            ItemStack[] topHeads = new ItemStack[45];
+            int i = 0;
+            // loop through the result set
+            while (rs.next()) {
+                String owner_name = rs.getString("owner_name");
+                Integer score = rs.getInt("score");
+                Double x_pos = rs.getDouble("x_pos");
+                Integer plot_id = rs.getInt("id");
+                Double y_pos = rs.getDouble("y_pos");
+                Double z_pos = rs.getDouble("z_pos");
+                String world = rs.getString("world");
+                Date regis_date = rs.getDate("regis_date");
+                World w = Bukkit.getWorld(world);
+                Location location = new Location(w,x_pos,y_pos,z_pos);
+                topHeads[i++] = GUI.getMyPlotHead(owner_name, i ,score, location, plot_id,regis_date);
+            }
+            Inventory top = GUI.getTopPlotGUI(topHeads, sender, "เฉพาะของฉัน");
+            sender.openInventory(top);
+
+        }catch(Exception e){
+
+        }
+    }
     public void createInitTables(){
         // SQL statement for creating a new table
         String types = "CREATE TABLE IF NOT EXISTS types (\n"
