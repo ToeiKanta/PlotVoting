@@ -56,7 +56,7 @@ public class GUI {
     public static Inventory getTopPlotGUI(ItemStack[] items, Player sender, String type_name, Integer page_number){
         Inventory gui = Bukkit.createInventory(sender,45, ChatColor.BLACK + "จัดอันดับ " + type_name);
         //ไอเท็ม บอกเลขหน้า ตามจำนวน stack
-        ItemStack item = new ItemStack(Material.PAINTING, 1); //เปลี่ยนไอเท็มได้ แต่อย่าเปลี่ยนตำแหน่ง
+        ItemStack item = new ItemStack(Material.PAINTING, page_number); //เปลี่ยนไอเท็มได้ แต่อย่าเปลี่ยนตำแหน่ง
         ItemMeta wool = item.getItemMeta();
         wool.setDisplayName("หน้า : " + page_number); // ระวัง การเปลี่ยนชื่อ มีการ split ":" และเอาเลขด้านหลัง
         item.setItemMeta(wool);

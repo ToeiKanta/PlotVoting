@@ -21,11 +21,12 @@ public class ClickEvent implements Listener {
     public void onClickTopGUI(InventoryClickEvent e){
         //กรณีที่เปิด GUI topPlot หรือ myPlot จะมีคำว่าจัดอันดับอยู่ส่วนบนเสมอ
         if(e.getView().getTitle().contains(ChatColor.BLACK + "จัดอันดับ ")){
-            Player player = (Player) e.getWhoClicked();
-            // ตรวจสอบเลขหน้าจากชื่อไอเท็ม ที่ตำแหน่ง 40 (กลาง-ล่างสุด) Painting Item
-            String page_str = e.getClickedInventory().getItem(40).getItemMeta().getDisplayName().split(":")[1].trim();
-            Integer page_number = Integer.parseInt(page_str);
             try{
+                Player player = (Player) e.getWhoClicked();
+                // ตรวจสอบเลขหน้าจากชื่อไอเท็ม ที่ตำแหน่ง 40 (กลาง-ล่างสุด) Painting Item
+                String page_str = e.getClickedInventory().getItem(40).getItemMeta().getDisplayName().split(":")[1].trim();
+                Integer page_number = Integer.parseInt(page_str);
+
                 // กรณีคลิกที่หัวเท่านั้น
                 if(
                     e.getCurrentItem() != null
@@ -74,8 +75,11 @@ public class ClickEvent implements Listener {
                 }
                 // cancle event ไม่ให้ interact กับไอเท็มได้
                 e.setCancelled(true);
-            }catch(Exception ex){
+            } catch(NullPointerException ex){
+                e.setCancelled(true);
+            } catch(Exception ex){
                 Logger.print(ex.getMessage());
+                e.setCancelled(true);
             }
         }
 

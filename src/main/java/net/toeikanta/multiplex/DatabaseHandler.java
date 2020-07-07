@@ -20,7 +20,7 @@ public class DatabaseHandler {
     // ตั้งช่ือไฟล์ database
     private final String dbFileName = "/database.db";
     private PlotVoting plotVoting;
-    private String connUrl = "";
+    private String connUrl = ""; //ใช้เป็น URL ที่ไว้ connect database (ห้ามลบ)
 
     public DatabaseHandler(PlotVoting plotVoting){
         this.plotVoting = plotVoting;
@@ -62,15 +62,18 @@ public class DatabaseHandler {
 
     // ดูอันดับ plots จากประเภท
     public void getTopPlotByType(String type_name,Player sender, Integer page_number){
+        // แสดง plots row ทั้งหมด ตาม type_name เรียงตาม score จาก สูงไปต่ำ
+        // มีการจำกัดที่ 36 หัว ต่อ 1 หน้า (4 บรรทัด บรรทัดละ 9 column)
         String sql = "SELECT * FROM plots WHERE type_name = '" + type_name + "' ORDER BY score DESC LIMIT 36 OFFSET " + ((page_number-1) * 36);
 
-        try (Connection conn = DriverManager.getConnection(connUrl);
-             Statement stmt  = conn.createStatement();
-             ResultSet rs    = stmt.executeQuery(sql)){
-
+        try (
+            Connection conn = DriverManager.getConnection(connUrl);
+            Statement stmt  = conn.createStatement();
+            ResultSet rs    = stmt.executeQuery(sql)
+        ){
             ItemStack[] topHeads = new ItemStack[45];
             int i = 0;
-            // loop through the result set
+            // วนลูปแต่ละ plots ใส่ใน player head
             while (rs.next()) {
                 String owner_name = rs.getString("owner_name");
                 Integer score = rs.getInt("score");
@@ -82,16 +85,19 @@ public class DatabaseHandler {
                 Date regis_date = rs.getDate("regis_date");
                 World w = Bukkit.getWorld(world);
                 Location location = new Location(w,x_pos,y_pos,z_pos);
+                // methods สำหรับนำ data มาใส่ใน player head
                 topHeads[i++] = GUI.getTopPlotHead(owner_name, i ,score, location, plot_id,regis_date);
             }
+            // ส่ง heads ทั้งหมด ไปตาม methods นี้ เพื่อสร้าง GUI
             Inventory top = GUI.getTopPlotGUI(topHeads, sender, type_name, page_number);
+            // เปิด players's inventory
             sender.openInventory(top);
         } catch (SQLException e) {
             Logger.print(e.getMessage());
         }
     }
 
-    // แสดง Type ทั้งหมด
+    // แสดง Type ทั้งหมด แบบ text
     public void selectAllType(Player sender){
         String sql = "SELECT * FROM types";
 
@@ -115,6 +121,7 @@ public class DatabaseHandler {
 
     // ตรวจสอบว่า register plot เกิน limit ต่อคนต่อประเภท หรือยัง
     private Boolean isExceedLimitRegis(String type_name, Player player){
+        // รับค่า limit มาจาก Config.yml
         Integer limit = PlotVoting.plugin.getConfig().getInt("limit_regis_plot");
         try(
                 Connection conn = DriverManager.getConnection(connUrl);
@@ -134,18 +141,21 @@ public class DatabaseHandler {
 
     // สำหรับ register plot กับประเภทนั้นๆ
     public void registerPlot(String type_name, Player sender){
+        //ตรวจสอบว่า type มีอยู่จริง
         if(!isTypeExists(type_name)){
             sender.sendMessage(ChatColor.RED + "Type invalid");
             return;
         }
+        //ตรวจสอบว่าสามารถ register plot ได้อยู่
         if(isExceedLimitRegis(type_name, sender)){
+            // ดึงค่า limit จาก file config.yml
             Integer limit = PlotVoting.plugin.getConfig().getInt("limit_regis_plot");
             sender.sendMessage(ChatColor.RED + "ไม่สามารถลงเพิ่มได้แล้ว //ท่านสามารถลงสมัครได้เพียง " + limit + " ที่ ต่อ 1 ประเภท เท่านั้น!!");
             return;
         }
 
+        // เริ่มเพิ่ม data ลงใน table plots
         String sql = "INSERT INTO plots(x_pos,y_pos,owner_name,type_name,score,world,z_pos,regis_date) VALUES(?,?,?,?,?,?,?,?)";
-
         try (Connection conn = DriverManager.getConnection(connUrl);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setDouble(1, sender.getLocation().getX());
@@ -157,7 +167,11 @@ public class DatabaseHandler {
             pstmt.setDouble(7, sender.getLocation().getZ());
             pstmt.setDate(8, new Date(System.currentTimeMillis()));
             pstmt.executeUpdate();
-            sender.sendMessage("register building with type '" + type_name +"' completed");
+            Libs.playSoundLevelUp(sender);
+            Libs.spawnFireWork(sender);
+            sender.sendMessage(ChatColor.GOLD + "ทำการลงทะเบียนพิกัด ประเภท '" + type_name +"' สำเร็จแล้ว");
+            sender.sendMessage(ChatColor.GREEN + "ท่านสามารถ ตรวจสอบสถานะ plot ของท่านได้ ด้วยคำสั่ง /pv myplot");
+
         } catch (SQLException e) {
             sender.sendMessage(e.getMessage());
             Logger.print(e.getMessage());
