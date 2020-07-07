@@ -394,7 +394,7 @@ public class DatabaseHandler {
           - type_name ชื่อประเภท
          */
         String plots = "CREATE TABLE IF NOT EXISTS plots (\n"
-                + "	id integer PRIMARY KEY,\n"
+                + "	id integer PRIMARY KEY AUTOINCREMENT,\n"
                 + "	x_pos real NOT NULL,\n"
                 + "	y_pos real NOT NULL,\n"
                 + "	z_pos real NOT NULL,\n"
@@ -416,7 +416,7 @@ public class DatabaseHandler {
           - plot_id ไอดี plot
          */
         String votes = "CREATE TABLE IF NOT EXISTS votes (\n"
-                + "	id integer PRIMARY KEY,\n"
+                + "	id integer PRIMARY KEY AUTOINCREMENT,\n"
                 + "	vote_date date NOT NULL,\n"
                 + "	player_name text NOT NULL,\n"
                 + "	plot_id integer NOT NULL, \n"
