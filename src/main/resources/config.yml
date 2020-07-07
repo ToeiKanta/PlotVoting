@@ -3,3 +3,8 @@ name: "PlotVoting"
 world_whitelist: ["creative_world","home_world"]
 #limit register plot per user per type
 limit_regis_plot: 4
+
+# use back_button change this to true
+back_btn: true
+# back custom command
+back_command: "gui open votemenu"

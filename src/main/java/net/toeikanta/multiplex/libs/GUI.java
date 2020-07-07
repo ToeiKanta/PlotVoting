@@ -1,5 +1,6 @@
 package net.toeikanta.multiplex.libs;
 
+import net.toeikanta.multiplex.PlotVoting;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -79,6 +80,16 @@ public class GUI {
             item.setItemMeta(wool);
             items[39] = item; //เปลี่ยนไอเท็มได้ แต่อย่าเปลี่ยนตำแหน่ง
         }
+
+        //เพิ่ม ปุ่ม กลับ
+        if(PlotVoting.plugin.getConfig().getBoolean("back_btn")){
+            item = new ItemStack(Material.IRON_CHESTPLATE, 1); //เปลี่ยนไอเท็มได้ แต่อย่าเปลี่ยนตำแหน่ง
+            wool = item.getItemMeta();
+            wool.setDisplayName("กลับ"); // ระวัง การเปลี่ยนชื่อ
+            item.setItemMeta(wool);
+            items[36] = item; //เปลี่ยนไอเท็มได้ แต่อย่าเปลี่ยนตำแหน่ง
+        }
+
         // ปิดไม่ให้ เล่นกับ item ใน inventory ได้
         gui.setContents(items);
         return gui;

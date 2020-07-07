@@ -2,12 +2,15 @@ package net.toeikanta.multiplex.events;
 
 import net.toeikanta.multiplex.PlotVoting;
 import net.toeikanta.multiplex.libs.Logger;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
+
+import java.util.Objects;
 
 public class ClickEvent implements Listener {
     PlotVoting plotVoting;
@@ -73,6 +76,12 @@ public class ClickEvent implements Listener {
                             plotVoting.db.getTopPlotByType(type_name,player,page_number - 1);
                     }
                 }
+
+                // กรณีกดปุ่ม กลับ
+                if(e.getCurrentItem() != null && e.getCurrentItem().getItemMeta().getDisplayName().contains("กลับ")){
+                    Bukkit.getServer().dispatchCommand(player, Objects.requireNonNull(PlotVoting.plugin.getConfig().getString("back_command")));
+                }
+
                 // cancle event ไม่ให้ interact กับไอเท็มได้
                 e.setCancelled(true);
             } catch(NullPointerException ex){
