@@ -373,12 +373,26 @@ public class DatabaseHandler {
 
     // สร้างตารางเริ่มต้น กรณีที่ตารางยังไม่ถูกสร้างขึ้น
     public void createInitTables(){
-        // SQL statement for creating a new table
+        /*
+         Tables Structure - types
+          - type_name ชื่อประเภท
+          - start_date วันที่สร้างประเภท
+          - closed สถานะ ปิดรับหรือยัง (ยังไม่ได้ใช้)
+         */
         String types = "CREATE TABLE IF NOT EXISTS types (\n"
                 + "	type_name text NOT NULL PRIMARY KEY,\n"
                 + "	start_date date NOT NULL,\n"
                 + "	closed boolean NOT NULL\n"
                 + ");";
+        /*
+         Tables Structure - plots
+          - id คีย์หลัก
+          - x_pos , y_pos , z_pos ,world พิกัดที่ใช้คำสั่ง
+          - score แต้มโหวด
+          - regis_date วันลงทะเบียน plot
+          - owner_name เจ้าของ plot (คนใช้คำสั่ง)
+          - type_name ชื่อประเภท
+         */
         String plots = "CREATE TABLE IF NOT EXISTS plots (\n"
                 + "	id integer PRIMARY KEY,\n"
                 + "	x_pos real NOT NULL,\n"
@@ -394,6 +408,13 @@ public class DatabaseHandler {
                 + "     ON UPDATE CASCADE\n"
                 + "     ON DELETE CASCADE"
                 + ");";
+        /*
+         Tables Structure - votes
+          - id คีย์หลัก
+          - vote_date วันที่โหวด
+          - player_name คนโหวด
+          - plot_id ไอดี plot
+         */
         String votes = "CREATE TABLE IF NOT EXISTS votes (\n"
                 + "	id integer PRIMARY KEY,\n"
                 + "	vote_date date NOT NULL,\n"
