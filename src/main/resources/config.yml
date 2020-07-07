@@ -1,5 +1,5 @@
 name: "PlotVoting"
 # whitelist world
-world_whitelist: ["creative_world","plot_world","home_world"]
+world_whitelist: ["creative_world","home_world"]
 #limit register plot per user per type
 limit_regis_plot: 4
