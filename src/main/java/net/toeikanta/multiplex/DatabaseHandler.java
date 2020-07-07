@@ -40,6 +40,8 @@ public class DatabaseHandler {
         } finally {
             try {
                 if (conn != null) {
+//                    Statement stm = conn.createStatement();
+//                    stm.execute("PRAGMA foreign_keys=ON");
                     conn.close();
                 }
             } catch (SQLException ex) {
@@ -49,7 +51,7 @@ public class DatabaseHandler {
     }
 
     public void getTopPlotByType(String type_name,Player sender){
-        String sql = "SELECT x_pos,y_pos,score,owner_name,type_name FROM plots WHERE type_name = '" + type_name + "' ORDER BY score DESC";
+        String sql = "SELECT id,x_pos,y_pos,score,owner_name,type_name FROM plots WHERE type_name = '" + type_name + "' ORDER BY score DESC";
 
         try (Connection conn = DriverManager.getConnection(connUrl);
              Statement stmt  = conn.createStatement();
@@ -57,7 +59,7 @@ public class DatabaseHandler {
 
             // loop through the result set
             while (rs.next()) {
-                sender.sendMessage(
+                sender.sendMessage("ID: " + rs.getString("id")+" :: "+
                         rs.getString("x_pos")+","+
                                 rs.getString("y_pos")+ " score:: "+
                                 rs.getString("score") + " owner:: "+ rs.getString("owner_name")
@@ -103,7 +105,58 @@ public class DatabaseHandler {
             sender.sendMessage(e.getMessage());
             Logger.print(e.getMessage());
         }
+    }
 
+    private boolean isPlotExist(Integer plot_id){
+        //check plot id exist
+        String sql = "SELECT COUNT(*) AS count FROM plots WHERE id = " + plot_id;
+
+        try (Connection conn = DriverManager.getConnection(connUrl);
+             Statement stm = conn.createStatement()) {
+             ResultSet resultSet = stm.executeQuery(sql);
+             if(resultSet.getInt("count") > 0){
+                 return true;
+             }else{
+                 return false;
+             }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+    public void votePlot(Integer plot_id, Player sender){
+        if(!this.isPlotExist(plot_id)){
+            sender.sendMessage("Plot id invalid.");
+            return;
+        }
+        String sql = "INSERT INTO votes (vote_date,player_name,plot_id) VALUES(?,?,?)";
+
+        try (Connection conn = DriverManager.getConnection(connUrl);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setDate(1, new Date(System.currentTimeMillis()));
+            pstmt.setString(2, sender.getName());
+            pstmt.setInt(3, plot_id);
+            pstmt.executeUpdate();
+
+            // update plot score
+            String sql2 = "UPDATE plots SET score = score + 1 WHERE id = " + plot_id;
+            try (Connection conn2 = DriverManager.getConnection(connUrl);
+                 Statement stm = conn.createStatement()) {
+                stm.executeUpdate(sql2);
+            } catch (SQLException e) {
+                System.out.println(e.getMessage());
+            }
+            sender.sendMessage("vote plot '" + plot_id +"' success");
+        }catch (SQLException e){
+            if(e.getMessage().contains("SQLITE_CONSTRAINT")){
+                sender.sendMessage("คุณเคยโหวดพื้นที่นี้ไปแล้ว");
+            }else{
+                sender.sendMessage("เกิดปัญหาขัดข้อง");
+            }
+            Logger.print(e.getMessage());
+
+        }
     }
 
     public void addType(String type_name, Player sender) {
@@ -145,10 +198,10 @@ public class DatabaseHandler {
                 + "	id integer PRIMARY KEY,\n"
                 + "	vote_date date NOT NULL,\n"
                 + "	player_name text NOT NULL,\n"
-                + "	plot_id integer REFERENCES plots(id),\n"
-                + "	type_name text NOT NULL, \n"
-                + "   FOREIGN KEY (type_name) \n"
-                + "   REFERENCES types (name) \n"
+                + "	plot_id integer NOT NULL, \n"
+                + " UNIQUE(player_name,plot_id), \n"
+                + "   FOREIGN KEY (plot_id) \n"
+                + "   REFERENCES plots (id) \n"
                 + "     ON UPDATE CASCADE\n"
                 + "     ON DELETE CASCADE"
                 + ");";

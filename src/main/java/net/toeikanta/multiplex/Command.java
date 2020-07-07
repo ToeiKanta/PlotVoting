@@ -16,7 +16,7 @@ public class Command implements CommandExecutor {
     String listType = "list";
     String registerPlot = "addplot";
     String topPlot = "top";
-
+    String votePlot = "vote";
     Command(PlotVoting plotVoting){
         this.plotVoting = plotVoting;
     }
@@ -36,6 +36,8 @@ public class Command implements CommandExecutor {
                             plotVoting.db.registerPlot(args[1],player);
                         }else if(args[0].equalsIgnoreCase(topPlot)){
                             plotVoting.db.getTopPlotByType(args[1],player);
+                        }else if(args[0].equalsIgnoreCase(votePlot)){
+                            plotVoting.db.votePlot(Integer.parseInt(args[1]),player);
                         }
                     }catch (Exception e){
                         sender.sendMessage(ChatColor.GREEN+"=========== Use this command =========== ");
