@@ -22,6 +22,7 @@ public class ClickEvent implements Listener {
         //กรณีที่เปิด GUI topPlot หรือ myPlot จะมีคำว่าจัดอันดับอยู่ส่วนบนเสมอ
         if(e.getView().getTitle().contains(ChatColor.BLACK + "จัดอันดับ ")){
             Player player = (Player) e.getWhoClicked();
+            Integer page_number = e.getClickedInventory().getItem(40).getAmount();
             try{
                 // กรณีคลิกที่หัวเท่านั้น
                 if(
@@ -36,16 +37,40 @@ public class ClickEvent implements Listener {
                     if(e.getView().getTitle().contains("เฉพาะของฉัน")) {
                         if(e.isRightClick()){
                             plotVoting.db.removePlot(plot_id,player);
-                            plotVoting.db.getAllMyPlots(player);
+                            plotVoting.db.getAllMyPlots(player,page_number);
                         }
                     }
                     // กรณีทั่วไป คลิปซ้ายลบได้เลย
                     if(e.isLeftClick()){
                         plotVoting.db.plotTp(plot_id, player);
                     }
-                    // cancle event ไม่ให้ interact กับไอเท็มได้
-                    e.setCancelled(true);
                 }
+
+                // กรณีกดปุ่มหน้าถัดไป
+                if(e.getCurrentItem() != null&& e.getCurrentItem().getItemMeta().getDisplayName().contains("หน้าถัดไป")){
+                    String type_name = e.getCurrentItem().getItemMeta().getDisplayName().split(":")[0];
+                    // กรณีทั่วไป คลิปซ้ายลบได้เลย
+                    if(e.isLeftClick()){
+                        if(type_name.equals("เฉพาะของฉัน")){
+                            plotVoting.db.getAllMyPlots(player,page_number + 1);
+                        }else
+                            plotVoting.db.getTopPlotByType(type_name,player,page_number + 1);
+                    }
+                }
+
+                // กรณีกดปุ่ม ก่อนหน้า
+                if(e.getCurrentItem() != null && e.getCurrentItem().getItemMeta().getDisplayName().contains("หน้าก่อนหน้า")){
+                    String type_name = e.getCurrentItem().getItemMeta().getDisplayName().split(":")[0];
+                    // กรณีทั่วไป คลิปซ้ายลบได้เลย
+                    if(e.isLeftClick() && page_number > 1){
+                        if(type_name.equals("เฉพาะของฉัน")){
+                            plotVoting.db.getAllMyPlots(player,page_number - 1);
+                        }else
+                            plotVoting.db.getTopPlotByType(type_name,player,page_number - 1);
+                    }
+                }
+                // cancle event ไม่ให้ interact กับไอเท็มได้
+                e.setCancelled(true);
             }catch(Exception ex){
                 Logger.print(ex.getMessage());
             }

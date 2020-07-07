@@ -3,6 +3,7 @@ package net.toeikanta.multiplex.libs;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -45,8 +46,35 @@ public class GUI {
         return item;
     }
 
-    public static Inventory getTopPlotGUI(ItemStack[] items, Player sender, String type_name){
+    public static Inventory getTopPlotGUI(ItemStack[] items, Player sender, String type_name, Integer page_number){
         Inventory gui = Bukkit.createInventory(sender,45, ChatColor.BLACK + "จัดอันดับ " + type_name);
+        //ไอเท็ม บอกเลขหน้า ตามจำนวน stack
+        ItemStack item = new ItemStack(Material.PAINTING, page_number);
+        ItemMeta wool = item.getItemMeta();
+        wool.setDisplayName("หน้า " + page_number);
+        item.setItemMeta(wool);
+        items[40] = item;
+
+        //ไอเท็ม หน้าถัดไป
+        if(items[35] != null){
+            item = new ItemStack(Material.LIME_WOOL, 1);
+            wool = item.getItemMeta();
+            wool.setDisplayName(type_name + ":"+ChatColor.GREEN+"หน้าถัดไป");
+            item.setItemMeta(wool);
+            items[41] = item;
+        }
+
+        //ไอเท็ม ก่อนหน้า
+        if(page_number > 1){
+            item = new ItemStack(Material.LIME_WOOL, 1);
+            wool = item.getItemMeta();
+            wool.setDisplayName(type_name + ":"+ChatColor.GREEN+"หน้าก่อนหน้า");
+            item.setItemMeta(wool);
+            items[39] = item;
+        }
+
+
+
         gui.setContents(items);
         return gui;
     }

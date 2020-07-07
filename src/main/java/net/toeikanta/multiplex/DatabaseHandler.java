@@ -62,8 +62,8 @@ public class DatabaseHandler {
         }
     }
 
-    public void getTopPlotByType(String type_name,Player sender){
-        String sql = "SELECT * FROM plots WHERE type_name = '" + type_name + "' ORDER BY score DESC";
+    public void getTopPlotByType(String type_name,Player sender, Integer page_number){
+        String sql = "SELECT * FROM plots WHERE type_name = '" + type_name + "' ORDER BY score DESC LIMIT 36 OFFSET " + ((page_number-1) * 36);
 
         try (Connection conn = DriverManager.getConnection(connUrl);
              Statement stmt  = conn.createStatement();
@@ -85,7 +85,7 @@ public class DatabaseHandler {
                 Location location = new Location(w,x_pos,y_pos,z_pos);
                 topHeads[i++] = GUI.getTopPlotHead(owner_name, i ,score, location, plot_id,regis_date);
             }
-            Inventory top = GUI.getTopPlotGUI(topHeads, sender, type_name);
+            Inventory top = GUI.getTopPlotGUI(topHeads, sender, type_name, page_number);
             sender.openInventory(top);
         } catch (SQLException e) {
             Logger.print(e.getMessage());
@@ -318,11 +318,11 @@ public class DatabaseHandler {
         }
     }
 
-    public void getAllMyPlots(Player sender){
+    public void getAllMyPlots(Player sender, Integer page_number){
         try (Connection conn = DriverManager.getConnection(connUrl);
             Statement stmt = conn.createStatement();
         ){
-            ResultSet rs = stmt.executeQuery("SELECT * FROM plots WHERE owner_name = '"+sender.getName() + "'");
+            ResultSet rs = stmt.executeQuery("SELECT * FROM plots WHERE owner_name = '"+sender.getName() + "' ORDER BY score DESC LIMIT 36 OFFSET " + ((page_number-1) * 36));
 
             ItemStack[] topHeads = new ItemStack[45];
             int i = 0;
@@ -340,7 +340,7 @@ public class DatabaseHandler {
                 Location location = new Location(w,x_pos,y_pos,z_pos);
                 topHeads[i++] = GUI.getMyPlotHead(owner_name, i ,score, location, plot_id,regis_date);
             }
-            Inventory top = GUI.getTopPlotGUI(topHeads, sender, "เฉพาะของฉัน");
+            Inventory top = GUI.getTopPlotGUI(topHeads, sender, "เฉพาะของฉัน", page_number);
             sender.openInventory(top);
 
         }catch(Exception e){

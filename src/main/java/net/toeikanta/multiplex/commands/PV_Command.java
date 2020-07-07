@@ -42,7 +42,7 @@ public class PV_Command implements CommandExecutor {
                             player.sendMessage(ChatColor.RED + "โลกนี้ไม่ได้รับอนุญาตให้ใช้คำสั่งนี้ได้");
                         }
                     }else if(args[0].equalsIgnoreCase(topPlot)){
-                        plotVoting.db.getTopPlotByType(args[1],player);
+                        plotVoting.db.getTopPlotByType(args[1],player, 1);
                     }else if(args[0].equalsIgnoreCase(plotTP)){
                         if(Libs.isWorldAllowed(currentWorld)){
                             plotVoting.db.plotTp(Integer.parseInt(args[1]),player);
@@ -54,7 +54,7 @@ public class PV_Command implements CommandExecutor {
                     }else if(args[0].equalsIgnoreCase(removePlot)){
                         plotVoting.db.removePlot(Integer.parseInt(args[1]),player);
                     }else if(args[0].equalsIgnoreCase(myPlot)){
-                        plotVoting.db.getAllMyPlots(player);
+                        plotVoting.db.getAllMyPlots(player,1);
                     }else{
                         showDescription(player);
                     }
