@@ -48,8 +48,8 @@ public class DatabaseHandler {
         }
     }
 
-    public void getTopVoteByType(String type,Player sender){
-        String sql = "SELECT vote_date,player_name,type_name FROM plot WHERE type_name = ? ORDER BY ";
+    public void getTopPlotByType(String type_name,Player sender){
+        String sql = "SELECT x_pos,y_pos,score,owner_name,type_name FROM plots WHERE type_name = '" + type_name + "' ORDER BY score DESC";
 
         try (Connection conn = DriverManager.getConnection(connUrl);
              Statement stmt  = conn.createStatement();
@@ -57,11 +57,11 @@ public class DatabaseHandler {
 
             // loop through the result set
             while (rs.next()) {
-                sender.sendMessage(rs.getString("name"));
-                Logger.print(rs.getInt("id") +  "\t" +
-                        rs.getString("name") + "\t" +
-                        rs.getBoolean("closed") + "\t" +
-                        rs.getDate("start_date"));
+                sender.sendMessage(
+                        rs.getString("x_pos")+","+
+                                rs.getString("y_pos")+ " score:: "+
+                                rs.getString("score") + " owner:: "+ rs.getString("owner_name")
+                        );
             }
         } catch (SQLException e) {
             Logger.print(e.getMessage());
@@ -87,16 +87,35 @@ public class DatabaseHandler {
         }
     }
 
-    public void addType(String name, Player sender) {
+    public void registerPlot(String type_name, Player sender){
+        String sql = "INSERT INTO plots(x_pos,y_pos,owner_name,type_name,score) VALUES(?,?,?,?,?)";
+
+        try (Connection conn = DriverManager.getConnection(connUrl);
+             PreparedStatement pstmt = conn.prepareStatement(sql)) {
+            pstmt.setDouble(1, sender.getLocation().getX());
+            pstmt.setDouble(2, sender.getLocation().getY());
+            pstmt.setString(3, sender.getName());
+            pstmt.setString(4, type_name);
+            pstmt.setInt(5, 0);
+            pstmt.executeUpdate();
+            sender.sendMessage("register building with type '" + type_name +"' completed");
+        } catch (SQLException e) {
+            sender.sendMessage(e.getMessage());
+            Logger.print(e.getMessage());
+        }
+
+    }
+
+    public void addType(String type_name, Player sender) {
         String sql = "INSERT INTO types(name,start_date,closed) VALUES(?,?,?)";
 
         try (Connection conn = DriverManager.getConnection(connUrl);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
-            pstmt.setString(1, name);
+            pstmt.setString(1, type_name);
             pstmt.setDate(2, new Date(System.currentTimeMillis()));
             pstmt.setBoolean(3, false);
             pstmt.executeUpdate();
-            sender.sendMessage("add type '" + name +"' completed");
+            sender.sendMessage("add type '" + type_name +"' completed");
         } catch (SQLException e) {
             sender.sendMessage(e.getMessage());
             Logger.print(e.getMessage());
@@ -114,6 +133,7 @@ public class DatabaseHandler {
                 + "	id integer PRIMARY KEY,\n"
                 + "	x_pos real NOT NULL,\n"
                 + "	y_pos real NOT NULL,\n"
+                + "	score integer NOT NULL,\n"
                 + "owner_name text NOT NULL,"
                 + "type_name text NOT NULL,"
                 + " FOREIGN KEY (type_name)\n"

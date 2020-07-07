@@ -12,6 +12,8 @@ public class Command implements CommandExecutor {
     String pvote = "pvote";
     String addType = "add";
     String listType = "list";
+    String registerPlot = "addplot";
+    String topPlot = "top";
 
     Command(PlotVoting plotVoting){
         this.plotVoting = plotVoting;
@@ -23,17 +25,24 @@ public class Command implements CommandExecutor {
             Player player = (Player) sender;
             if(player.hasPermission("pvote.admin")){
                 if (label.equalsIgnoreCase(pvote)) {
-                    if(args.length == 0){
+                    try {
+                        if (args[0].equalsIgnoreCase(addType)) {
+                            plotVoting.db.addType(args[1],player);
+                        }else if (args[0].equalsIgnoreCase(listType)) {
+                            plotVoting.db.selectAllType(player);
+                        }else if(args[0].equalsIgnoreCase(registerPlot)){
+                            plotVoting.db.registerPlot(args[1],player);
+                        }else if(args[0].equalsIgnoreCase(topPlot)){
+                            plotVoting.db.getTopPlotByType(args[1],player);
+                        }
+                    }catch (Exception e){
                         sender.sendMessage("=========== Use this command =========== ");
                         sender.sendMessage("/pvote " + addType + " <type_name>  #add new type");
                         sender.sendMessage("/pvote " + listType + " #show all types");
+                        sender.sendMessage("/pvote " + registerPlot + " <type_name> #add plot to type");
+                        sender.sendMessage("/pvote " + topPlot + " <type_name> #show top plot by type");
                         sender.sendMessage("======================================== ");
                         return false;
-                    }
-                    if (args[0].equalsIgnoreCase(addType)) {
-                        plotVoting.db.addType(args[1],player);
-                    }else if (args[0].equalsIgnoreCase(listType)) {
-                        plotVoting.db.selectAllType(player);
                     }
                 }
             }else{
