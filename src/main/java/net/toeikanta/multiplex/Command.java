@@ -5,13 +5,18 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.awt.*;
+
 public class Command implements CommandExecutor {
 
     PlotVoting plotVoting;
 
-    String pvote = "pvote";
-    String addGroup = "addgroup";
-
+    String pvote = "pv";
+    String addType = "add";
+    String listType = "list";
+    String registerPlot = "addplot";
+    String topPlot = "top";
+    String votePlot = "vote";
     Command(PlotVoting plotVoting){
         this.plotVoting = plotVoting;
     }
@@ -22,10 +27,26 @@ public class Command implements CommandExecutor {
             Player player = (Player) sender;
             if(player.hasPermission("pvote.admin")){
                 if (label.equalsIgnoreCase(pvote)) {
-                    if (args[0].equalsIgnoreCase(addGroup)) {
-                            sender.sendMessage(ChatColor.YELLOW + "test command worked. " + args[1]);
-                    }else {
-                        sender.sendMessage("You must provide cmd!");
+                    try {
+                        if (args[0].equalsIgnoreCase(addType)) {
+                            plotVoting.db.addType(args[1],player);
+                        }else if (args[0].equalsIgnoreCase(listType)) {
+                            plotVoting.db.selectAllType(player);
+                        }else if(args[0].equalsIgnoreCase(registerPlot)){
+                            plotVoting.db.registerPlot(args[1],player);
+                        }else if(args[0].equalsIgnoreCase(topPlot)){
+                            plotVoting.db.getTopPlotByType(args[1],player);
+                        }else if(args[0].equalsIgnoreCase(votePlot)){
+                            plotVoting.db.votePlot(Integer.parseInt(args[1]),player);
+                        }
+                    }catch (Exception e){
+                        sender.sendMessage(ChatColor.GREEN+"=========== Use this command =========== ");
+                        sender.sendMessage(ChatColor.GREEN+"/pvote " + addType + " <type_name>  "+ ChatColor.BLUE +"#add new type");
+                        sender.sendMessage(ChatColor.GREEN+"/pvote " + listType + ChatColor.BLUE +" #show all types");
+                        sender.sendMessage(ChatColor.GREEN+"/pvote " + registerPlot + " <type_name> "+ ChatColor.BLUE +" #add plot to type");
+                        sender.sendMessage(ChatColor.GREEN+"/pvote " + topPlot + " <type_name> "+ ChatColor.BLUE +"#show top plot by type");
+                        sender.sendMessage(ChatColor.GREEN+"======================================== ");
+                        return false;
                     }
                 }
             }else{

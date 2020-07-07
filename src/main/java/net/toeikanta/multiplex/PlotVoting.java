@@ -6,15 +6,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public final class PlotVoting extends JavaPlugin {
-    private DatabaseHandler db;
+    public DatabaseHandler db;
 
     @Override
     public void onEnable() {
         // Copy the config.yml in the plugin configuration folder if it doesn't exists.
 //        this.saveDefaultConfig();
-        this.getCommand("pvote").setExecutor(new Command(this));
+        this.getCommand("pv").setExecutor(new Command(this));
         Logger.print("enabled PlotVoting plugin!");
-        db = new DatabaseHandler(this);
+        this.db = new DatabaseHandler(this);
 //        this.getCommand("pvote").setExecutor(this);
     }
 
