@@ -85,6 +85,7 @@ public class PV_Command implements CommandExecutor {
 
     void showDescription(Player sender){
         sender.sendMessage(ChatColor.GRAY+"======== PlotVoting by MC-Multiplex ======== ");
+        sender.sendMessage(ChatColor.GREEN+"/pva " + ChatColor.YELLOW +" #for admin commands");
         sender.sendMessage(ChatColor.GRAY+"- member commands (pvote.default)");
         sender.sendMessage(ChatColor.GREEN+"/pv " + registerPlot + " <type_name> "+ ChatColor.YELLOW +" #add plot to type");
         sender.sendMessage(ChatColor.GREEN+"/pv " + topPlot + " <type_name> "+ ChatColor.YELLOW +"#show top plot by type");

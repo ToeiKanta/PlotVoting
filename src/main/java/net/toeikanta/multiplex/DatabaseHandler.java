@@ -114,6 +114,11 @@ public class DatabaseHandler {
     }
 
     public void registerPlot(String type_name, Player sender){
+        if(!isTypeExists(type_name)){
+            sender.sendMessage(ChatColor.RED + "Type invalid");
+           return;
+        }
+
         String sql = "INSERT INTO plots(x_pos,y_pos,owner_name,type_name,score,world,z_pos) VALUES(?,?,?,?,?,?,?)";
 
         try (Connection conn = DriverManager.getConnection(connUrl);
@@ -146,6 +151,24 @@ public class DatabaseHandler {
              }else{
                  return false;
              }
+        } catch (SQLException e) {
+            System.out.println(e.getMessage());
+            return false;
+        }
+    }
+
+    private boolean isTypeExists(String type_name){
+        //check plot id exist
+        String sql = "SELECT COUNT(*) AS count FROM types WHERE name = " + type_name;
+
+        try (Connection conn = DriverManager.getConnection(connUrl);
+             Statement stm = conn.createStatement()) {
+            ResultSet resultSet = stm.executeQuery(sql);
+            if(resultSet.getInt("count") > 0){
+                return true;
+            }else{
+                return false;
+            }
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             return false;
