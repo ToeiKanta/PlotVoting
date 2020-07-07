@@ -16,18 +16,35 @@ public class ClickEvent implements Listener {
         this.plotVoting = plotVoting;
     }
 
+    //สำหรับการวาร์ป และ ลบ plot
     @EventHandler
     public void onClickTopGUI(InventoryClickEvent e){
+        //กรณีที่เปิด GUI topPlot หรือ myPlot จะมีคำว่าจัดอันดับอยู่ส่วนบนเสมอ
         if(e.getView().getTitle().contains(ChatColor.BLACK + "จัดอันดับ ")){
             Player player = (Player) e.getWhoClicked();
-            //add warp on click
             try{
-                if(e.getCurrentItem() != null && e.getCurrentItem().getType().equals(Material.PLAYER_HEAD)){
-                    if(e.getCurrentItem().getItemMeta().getDisplayName().contains("อันดับ")){
-                        String id = e.getCurrentItem().getItemMeta().getDisplayName().split("id:")[1].trim();
-                        plotVoting.db.plotTp(Integer.parseInt(id), player);
-                        e.setCancelled(true);
+                // กรณีคลิกที่หัวเท่านั้น
+                if(
+                    e.getCurrentItem() != null
+                    && e.getCurrentItem().getType().equals(Material.PLAYER_HEAD)
+                    && e.getCurrentItem().getItemMeta().getDisplayName().contains("อันดับ")
+                ){
+                    // หาไอดีจาก title
+                    String plot_str = e.getCurrentItem().getItemMeta().getDisplayName().split("id:")[1].trim();
+                    Integer plot_id = Integer.parseInt(plot_str);
+                    // กรณีเป็น GUI ที่แสดง myplot จะคลิกขวาเพื่อลบได้
+                    if(e.getView().getTitle().contains("เฉพาะของฉัน")) {
+                        if(e.isRightClick()){
+                            plotVoting.db.removePlot(plot_id,player);
+                            plotVoting.db.getAllMyPlots(player);
+                        }
                     }
+                    // กรณีทั่วไป คลิปซ้ายลบได้เลย
+                    if(e.isLeftClick()){
+                        plotVoting.db.plotTp(plot_id, player);
+                    }
+                    // cancle event ไม่ให้ interact กับไอเท็มได้
+                    e.setCancelled(true);
                 }
             }catch(Exception ex){
                 Logger.print(ex.getMessage());
