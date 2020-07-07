@@ -5,11 +5,13 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.awt.*;
+
 public class Command implements CommandExecutor {
 
     PlotVoting plotVoting;
 
-    String pvote = "pvote";
+    String pvote = "pv";
     String addType = "add";
     String listType = "list";
     String registerPlot = "addplot";
@@ -36,12 +38,12 @@ public class Command implements CommandExecutor {
                             plotVoting.db.getTopPlotByType(args[1],player);
                         }
                     }catch (Exception e){
-                        sender.sendMessage("=========== Use this command =========== ");
-                        sender.sendMessage("/pvote " + addType + " <type_name>  #add new type");
-                        sender.sendMessage("/pvote " + listType + " #show all types");
-                        sender.sendMessage("/pvote " + registerPlot + " <type_name> #add plot to type");
-                        sender.sendMessage("/pvote " + topPlot + " <type_name> #show top plot by type");
-                        sender.sendMessage("======================================== ");
+                        sender.sendMessage(ChatColor.GREEN+"=========== Use this command =========== ");
+                        sender.sendMessage(ChatColor.GREEN+"/pvote " + addType + " <type_name>  "+ ChatColor.BLUE +"#add new type");
+                        sender.sendMessage(ChatColor.GREEN+"/pvote " + listType + ChatColor.BLUE +" #show all types");
+                        sender.sendMessage(ChatColor.GREEN+"/pvote " + registerPlot + " <type_name> "+ ChatColor.BLUE +" #add plot to type");
+                        sender.sendMessage(ChatColor.GREEN+"/pvote " + topPlot + " <type_name> "+ ChatColor.BLUE +"#show top plot by type");
+                        sender.sendMessage(ChatColor.GREEN+"======================================== ");
                         return false;
                     }
                 }
