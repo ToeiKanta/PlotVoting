@@ -100,10 +100,12 @@ public class DatabaseHandler {
              ResultSet rs    = stmt.executeQuery(sql)){
 
             // loop through the result set
+            int i = 1;
             while (rs.next()) {
-                sender.sendMessage(rs.getString("name"));
-                Logger.print(rs.getString("name") + "\t" +
-                        rs.getBoolean("closed") + "\t" +
+                sender.sendMessage(
+                        (i++) + ", name: " +
+                        rs.getString("name") + ", closed: " +
+                        rs.getBoolean("closed") + ", start_date: " +
                         rs.getDate("start_date"));
             }
         } catch (SQLException e) {
@@ -149,6 +151,7 @@ public class DatabaseHandler {
             return false;
         }
     }
+
     public void removePlot(Integer plot_id,Player sender){
         String sql = "DELETE FROM plots WHERE owner_name = '" + sender.getName() + "' AND id = " + plot_id ;
 
