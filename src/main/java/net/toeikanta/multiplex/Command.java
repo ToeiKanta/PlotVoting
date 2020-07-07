@@ -11,6 +11,7 @@ public class Command implements CommandExecutor {
 
     String pvote = "pvote";
     String addType = "add";
+    String listType = "list";
 
     Command(PlotVoting plotVoting){
         this.plotVoting = plotVoting;
@@ -22,11 +23,17 @@ public class Command implements CommandExecutor {
             Player player = (Player) sender;
             if(player.hasPermission("pvote.admin")){
                 if (label.equalsIgnoreCase(pvote)) {
+                    if(args.length == 0){
+                        sender.sendMessage("=========== Use this command =========== ");
+                        sender.sendMessage("/pvote " + addType + " <type_name>  #add new type");
+                        sender.sendMessage("/pvote " + listType + " #show all types");
+                        sender.sendMessage("======================================== ");
+                        return false;
+                    }
                     if (args[0].equalsIgnoreCase(addType)) {
-                        plotVoting.db.addType(args[1]);
-                        sender.sendMessage(ChatColor.YELLOW + "test command worked. " + args[1]);
-                    }else {
-                        sender.sendMessage("You must provide cmd!");
+                        plotVoting.db.addType(args[1],player);
+                    }else if (args[0].equalsIgnoreCase(listType)) {
+                        plotVoting.db.selectAllType(player);
                     }
                 }
             }else{

@@ -1,6 +1,6 @@
 package net.toeikanta.multiplex;
 
-import javax.xml.crypto.Data;
+import org.bukkit.entity.Player;
 import java.io.*;
 import java.sql.*;
 
@@ -26,9 +26,9 @@ public class DatabaseHandler {
             // create a connection to the database
             Class.forName("org.sqlite.JDBC");
                 //use this for production
-//            String url = "jdbc:sqlite:" + plotVoting.getDataFolder() + dbFileName;
+            String url = "jdbc:sqlite:" + plotVoting.getDataFolder() + dbFileName;
                 //use this for test
-            String url = "jdbc:sqlite:memory:";
+//            String url = "jdbc:sqlite:memory:";
 
             this.connUrl = url;
             Logger.print(url);
@@ -48,8 +48,28 @@ public class DatabaseHandler {
         }
     }
 
-    public void addType(String name) {
-        String sql = "INSERT INTO type(name,start_date,closed) VALUES(?,?,?)";
+    public void selectAllType(Player sender){
+        String sql = "SELECT * FROM types";
+
+        try (Connection conn = DriverManager.getConnection(connUrl);
+             Statement stmt  = conn.createStatement();
+             ResultSet rs    = stmt.executeQuery(sql)){
+
+            // loop through the result set
+            while (rs.next()) {
+                sender.sendMessage(rs.getString("name"));
+                Logger.print(rs.getInt("id") +  "\t" +
+                        rs.getString("name") + "\t" +
+                        rs.getBoolean("closed") + "\t" +
+                        rs.getDate("start_date"));
+            }
+        } catch (SQLException e) {
+            Logger.print(e.getMessage());
+        }
+    }
+
+    public void addType(String name, Player sender) {
+        String sql = "INSERT INTO types(name,start_date,closed) VALUES(?,?,?)";
 
         try (Connection conn = DriverManager.getConnection(connUrl);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -57,17 +77,18 @@ public class DatabaseHandler {
             pstmt.setDate(2, new Date(System.currentTimeMillis()));
             pstmt.setBoolean(3, false);
             pstmt.executeUpdate();
-            Logger.print("add type '" + name +"' completed");
+            sender.sendMessage("add type '" + name +"' completed");
         } catch (SQLException e) {
-            System.out.println(e.getMessage());
+            sender.sendMessage(e.getMessage());
+            Logger.print(e.getMessage());
         }
     }
 
     public void createInitTables(){
         // SQL statement for creating a new table
-        String type = "CREATE TABLE IF NOT EXISTS type (\n"
+        String type = "CREATE TABLE IF NOT EXISTS types (\n"
                 + "	id integer PRIMARY KEY,\n"
-                + "	name text NOT NULL,\n"
+                + "	name text NOT NULL UNIQUE,\n"
                 + "	start_date date NOT NULL,\n"
                 + "	closed boolean NOT NULL\n"
                 + ");";
@@ -76,11 +97,15 @@ public class DatabaseHandler {
 //                + "	name text NOT NULL,\n"
 //                + "	name text NOT NULL\n"
 //                + ");";
-        String vote = "CREATE TABLE IF NOT EXISTS vote (\n"
+        String vote = "CREATE TABLE IF NOT EXISTS votes (\n"
                 + "	id integer PRIMARY KEY,\n"
                 + "	vote_date date NOT NULL,\n"
                 + "	player_name text NOT NULL,\n"
                 + "	type_id integer NOT NULL\n"
+                + " FOREIGN KEY (type_id)\n"
+                + "   REFERENCES types (id)\n"
+                + "     ON UPDATE CASCADE\n"
+                + "     ON DELETE CASCADE"
                 + ");";
 
         try (Connection conn = DriverManager.getConnection(connUrl);
