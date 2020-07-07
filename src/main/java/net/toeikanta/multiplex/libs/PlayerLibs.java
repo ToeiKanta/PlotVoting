@@ -5,6 +5,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
 public class PlayerLibs {
+    // ส่งกลับ หัวที่มี skin ของ player
     public static ItemStack getPlayerHead(String playerName) {
         ItemStack item = new ItemStack(Material.PLAYER_HEAD, 1);
         SkullMeta skull = (SkullMeta) item.getItemMeta();

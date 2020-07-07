@@ -7,7 +7,11 @@ authors: [ToeiKanta]
 description: PlotVoting plugin
 
 commands:
-  pv:
+  plotvote:
+    description: command to vote plot
+    aliases: ['pv','pvote']
+  pva:
     description: command to vote plot
     permission: pvote.admin
-    permission-message: You don't have <permission>
+    permission-required: true
+    permission-message: You do not have /<permission>
