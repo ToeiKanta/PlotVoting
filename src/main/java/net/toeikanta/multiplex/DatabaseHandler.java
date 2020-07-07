@@ -48,8 +48,8 @@ public class DatabaseHandler {
         }
     }
 
-    public void selectAllType(Player sender){
-        String sql = "SELECT * FROM types";
+    public void getTopVoteByType(String type,Player sender){
+        String sql = "SELECT vote_date,player_name,type_name FROM plot WHERE type_name = ? ORDER BY ";
 
         try (Connection conn = DriverManager.getConnection(connUrl);
              Statement stmt  = conn.createStatement();
@@ -60,6 +60,25 @@ public class DatabaseHandler {
                 sender.sendMessage(rs.getString("name"));
                 Logger.print(rs.getInt("id") +  "\t" +
                         rs.getString("name") + "\t" +
+                        rs.getBoolean("closed") + "\t" +
+                        rs.getDate("start_date"));
+            }
+        } catch (SQLException e) {
+            Logger.print(e.getMessage());
+        }
+    }
+
+    public void selectAllType(Player sender){
+        String sql = "SELECT * FROM types";
+
+        try (Connection conn = DriverManager.getConnection(connUrl);
+             Statement stmt  = conn.createStatement();
+             ResultSet rs    = stmt.executeQuery(sql)){
+
+            // loop through the result set
+            while (rs.next()) {
+                sender.sendMessage(rs.getString("name"));
+                Logger.print(rs.getString("name") + "\t" +
                         rs.getBoolean("closed") + "\t" +
                         rs.getDate("start_date"));
             }
@@ -86,24 +105,30 @@ public class DatabaseHandler {
 
     public void createInitTables(){
         // SQL statement for creating a new table
-        String type = "CREATE TABLE IF NOT EXISTS types (\n"
-                + "	id integer PRIMARY KEY,\n"
-                + "	name text NOT NULL UNIQUE,\n"
+        String types = "CREATE TABLE IF NOT EXISTS types (\n"
+                + "	name text NOT NULL PRIMARY KEY,\n"
                 + "	start_date date NOT NULL,\n"
                 + "	closed boolean NOT NULL\n"
                 + ");";
-//        String player = "CREATE TABLE IF NOT EXISTS player (\n"
-//                + "	id integer PRIMARY KEY,\n"
-//                + "	name text NOT NULL,\n"
-//                + "	name text NOT NULL\n"
-//                + ");";
-        String vote = "CREATE TABLE IF NOT EXISTS votes (\n"
+        String plots = "CREATE TABLE IF NOT EXISTS plots (\n"
+                + "	id integer PRIMARY KEY,\n"
+                + "	x_pos real NOT NULL,\n"
+                + "	y_pos real NOT NULL,\n"
+                + "owner_name text NOT NULL,"
+                + "type_name text NOT NULL,"
+                + " FOREIGN KEY (type_name)\n"
+                + "   REFERENCES types (name)\n"
+                + "     ON UPDATE CASCADE\n"
+                + "     ON DELETE CASCADE"
+                + ");";
+        String votes = "CREATE TABLE IF NOT EXISTS votes (\n"
                 + "	id integer PRIMARY KEY,\n"
                 + "	vote_date date NOT NULL,\n"
                 + "	player_name text NOT NULL,\n"
-                + "	type_id integer NOT NULL\n"
-                + " FOREIGN KEY (type_id)\n"
-                + "   REFERENCES types (id)\n"
+                + "	plot_id integer REFERENCES plots(id),\n"
+                + "	type_name text NOT NULL, \n"
+                + "   FOREIGN KEY (type_name) \n"
+                + "   REFERENCES types (name) \n"
                 + "     ON UPDATE CASCADE\n"
                 + "     ON DELETE CASCADE"
                 + ");";
@@ -111,10 +136,12 @@ public class DatabaseHandler {
         try (Connection conn = DriverManager.getConnection(connUrl);
              Statement stmt = conn.createStatement()) {
             // create a new table
-            stmt.execute(type);
+            stmt.execute(types);
             Logger.print("check database type passed");
-            stmt.execute(vote);
+            stmt.execute(votes);
             Logger.print("check database vote passed ");
+            stmt.execute(plots);
+            Logger.print("check database plot passed ");
         } catch (SQLException e) {
             System.out.println(e.getMessage());
         }
