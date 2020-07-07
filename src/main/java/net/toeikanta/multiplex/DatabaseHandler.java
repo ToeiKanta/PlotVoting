@@ -1,5 +1,8 @@
 package net.toeikanta.multiplex;
 
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import java.io.*;
 import java.sql.*;
@@ -90,7 +93,7 @@ public class DatabaseHandler {
     }
 
     public void registerPlot(String type_name, Player sender){
-        String sql = "INSERT INTO plots(x_pos,y_pos,owner_name,type_name,score) VALUES(?,?,?,?,?)";
+        String sql = "INSERT INTO plots(x_pos,y_pos,owner_name,type_name,score,world,z_pos) VALUES(?,?,?,?,?,?,?)";
 
         try (Connection conn = DriverManager.getConnection(connUrl);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -99,6 +102,9 @@ public class DatabaseHandler {
             pstmt.setString(3, sender.getName());
             pstmt.setString(4, type_name);
             pstmt.setInt(5, 0);
+            pstmt.setString(6, sender.getLocation().getWorld().getName());
+            pstmt.setDouble(7, sender.getLocation().getZ());
+
             pstmt.executeUpdate();
             sender.sendMessage("register building with type '" + type_name +"' completed");
         } catch (SQLException e) {
@@ -122,6 +128,33 @@ public class DatabaseHandler {
         } catch (SQLException e) {
             System.out.println(e.getMessage());
             return false;
+        }
+    }
+
+    public void plotTp(Integer plot_id, Player sender) {
+        if (!this.isPlotExist(plot_id)) {
+            sender.sendMessage("Plot id invalid.");
+            return;
+        }
+        String sql = "SELECT * FROM plots WHERE id = " + plot_id;
+        try (Connection conn = DriverManager.getConnection(connUrl);
+             Statement stmt = conn.createStatement();
+        ) {
+            ResultSet pos = stmt.executeQuery(sql);
+            String world = pos.getString("world");
+            // บังคับ แค่ creative world เท่านั้น
+            // ลบออกถ้าต้องการให้ไปที่ไหนก็ได้
+            if(!world.equals(Command.creative_world_name)){
+                sender.sendMessage(ChatColor.RED + "ขออภัย ระหว่างนี้ไม่อนุญาตให้วาร์ปไปพื้นที่นี้ได้");
+                return;
+            }
+            World w = plotVoting.getServer().getWorld(world);
+            Double x_pos = pos.getDouble("x_pos");
+            Double y_pos = pos.getDouble("y_pos");
+            Double z_pos = pos.getDouble("z_pos");
+            sender.teleport(new Location(w, x_pos, y_pos, z_pos));
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
     }
 
@@ -186,6 +219,8 @@ public class DatabaseHandler {
                 + "	id integer PRIMARY KEY,\n"
                 + "	x_pos real NOT NULL,\n"
                 + "	y_pos real NOT NULL,\n"
+                + "	z_pos real NOT NULL,\n"
+                + "	world text NOT NULL,\n"
                 + "	score integer NOT NULL,\n"
                 + "owner_name text NOT NULL,"
                 + "type_name text NOT NULL,"

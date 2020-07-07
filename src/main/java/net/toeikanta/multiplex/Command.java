@@ -17,6 +17,9 @@ public class Command implements CommandExecutor {
     String registerPlot = "addplot";
     String topPlot = "top";
     String votePlot = "vote";
+    String plotTP = "tp";
+    static String creative_world_name = "plot_world";
+
     Command(PlotVoting plotVoting){
         this.plotVoting = plotVoting;
     }
@@ -33,18 +36,30 @@ public class Command implements CommandExecutor {
                         }else if (args[0].equalsIgnoreCase(listType)) {
                             plotVoting.db.selectAllType(player);
                         }else if(args[0].equalsIgnoreCase(registerPlot)){
-                            plotVoting.db.registerPlot(args[1],player);
+                            if(player.getLocation().getWorld().getName().equals(creative_world_name)){
+                                plotVoting.db.registerPlot(args[1],player);
+                            }else{
+                                player.sendMessage(ChatColor.RED + "คำสั่งนี้ใช้ได้เฉพาะโลกสร้างสรรค์เท่านั้น (creative_world)");
+                            }
                         }else if(args[0].equalsIgnoreCase(topPlot)){
                             plotVoting.db.getTopPlotByType(args[1],player);
                         }else if(args[0].equalsIgnoreCase(votePlot)){
                             plotVoting.db.votePlot(Integer.parseInt(args[1]),player);
+                        }else if(args[0].equalsIgnoreCase(plotTP)){
+                            if(player.getLocation().getWorld().getName().equals(creative_world_name)){
+                                plotVoting.db.plotTp(Integer.parseInt(args[1]),player);
+                            }else{
+                                player.sendMessage(ChatColor.RED + "คำสั่งนี้ใช้ได้เฉพาะโลกสร้างสรรค์เท่านั้น (creative_world)");
+                            }
                         }
                     }catch (Exception e){
                         sender.sendMessage(ChatColor.GREEN+"=========== Use this command =========== ");
-                        sender.sendMessage(ChatColor.GREEN+"/pvote " + addType + " <type_name>  "+ ChatColor.BLUE +"#add new type");
-                        sender.sendMessage(ChatColor.GREEN+"/pvote " + listType + ChatColor.BLUE +" #show all types");
-                        sender.sendMessage(ChatColor.GREEN+"/pvote " + registerPlot + " <type_name> "+ ChatColor.BLUE +" #add plot to type");
-                        sender.sendMessage(ChatColor.GREEN+"/pvote " + topPlot + " <type_name> "+ ChatColor.BLUE +"#show top plot by type");
+                        sender.sendMessage(ChatColor.GREEN+"/pvote " + addType + " <type_name>  "+ ChatColor.YELLOW +"#add new type");
+                        sender.sendMessage(ChatColor.GREEN+"/pvote " + listType + ChatColor.YELLOW +" #show all types");
+                        sender.sendMessage(ChatColor.GREEN+"/pvote " + registerPlot + " <type_name> "+ ChatColor.YELLOW +" #add plot to type");
+                        sender.sendMessage(ChatColor.GREEN+"/pvote " + topPlot + " <type_name> "+ ChatColor.YELLOW +"#show top plot by type");
+                        sender.sendMessage(ChatColor.GREEN+"/pvote " + votePlot + " <plot_id> "+ ChatColor.YELLOW +"#vote plot");
+                        sender.sendMessage(ChatColor.GREEN+"/pvote " + plotTP + " <plot_id> "+ ChatColor.YELLOW +"#teleport to plot");
                         sender.sendMessage(ChatColor.GREEN+"======================================== ");
                         return false;
                     }
