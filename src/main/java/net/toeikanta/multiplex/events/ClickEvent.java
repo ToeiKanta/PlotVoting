@@ -17,7 +17,8 @@ public class ClickEvent implements Listener {
     @EventHandler
     public void onClickTopGUI(InventoryClickEvent e){
         Player player = (Player) e.getWhoClicked();
-        if(e.getView().getTitle().equalsIgnoreCase(ChatColor.GOLD + "อันดับสูงสุด")){
+        if(e.getView().getTitle().contains(ChatColor.BLACK + "จัดอันดับ ")){
+            //add warp on click
             String id = e.getCurrentItem().getItemMeta().getDisplayName().split("id:")[1].trim();
             plotVoting.db.plotTp(Integer.parseInt(id), player);
             e.setCancelled(true);

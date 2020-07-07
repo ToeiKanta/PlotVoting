@@ -1,5 +1,6 @@
 package net.toeikanta.multiplex;
 
+import net.md_5.bungee.api.ChatMessageType;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -84,7 +85,7 @@ public class DatabaseHandler {
                 Location location = new Location(w,x_pos,y_pos,z_pos);
                 topHeads[i++] = GUI.getTopPlotHead(owner_name, i ,score, location, plot_id);
             }
-            Inventory top = GUI.getTopPlotGUI(topHeads, sender);
+            Inventory top = GUI.getTopPlotGUI(topHeads, sender, type_name);
             sender.openInventory(top);
         } catch (SQLException e) {
             Logger.print(e.getMessage());
@@ -173,19 +174,22 @@ public class DatabaseHandler {
             ResultSet pos = stmt.executeQuery(sql);
             String world = pos.getString("world");
             String owner_name = pos.getString("owner_name");
+            String type_name = pos.getString("type_name");
             Integer score = pos.getInt("score");
             World w = plotVoting.getServer().getWorld(world);
             Double x_pos = pos.getDouble("x_pos");
             Double y_pos = pos.getDouble("y_pos");
             Double z_pos = pos.getDouble("z_pos");
             sender.teleport(new Location(w, x_pos, y_pos, z_pos));
-            sender.sendMessage(ChatColor.GREEN + "============== PlotVoting by MC-Multiplex ===========");
-            sender.sendMessage(ChatColor.YELLOW + "ทำการวาร์ปไปที่พื้นที่ ID:" + plot_id.toString() + " สำเร็จแล้ว");
-            sender.sendMessage(ChatColor.YELLOW + "พื้นที่ของ : " + owner_name);
-            sender.sendMessage(ChatColor.YELLOW + "โลก : " + world);
-            sender.sendMessage(ChatColor.YELLOW + "พิกัด (x,y,z) : (" + MathLibs.parseDouble(x_pos) + "," + MathLibs.parseDouble(y_pos) + "," + MathLibs.parseDouble(z_pos) + ")");
-            sender.sendMessage(ChatColor.GOLD + "คะแนนโหวด : " + score.toString());
-            TextComponent clickVote = new TextComponent(">>>>>>>>>>> !! VOTE !! <<<<<<<<<<");
+            sender.playSound(sender.getLocation(),Sound.ENTITY_ENDERMAN_TELEPORT,100f,1f);
+            sender.sendMessage(ChatColor.GRAY + "============== PlotVoting by MC-Multiplex ===========");
+            sender.sendMessage(ChatColor.YELLOW + "ประเภทสิ่งก่อสร้าง : " + ChatColor.RED + type_name);
+            sender.sendMessage(ChatColor.YELLOW + "ทำการวาร์ปไปที่พื้นที่ " + ChatColor.RED + " ID " + plot_id.toString() + ChatColor.YELLOW +" สำเร็จแล้ว");
+            sender.sendMessage(ChatColor.YELLOW + "พื้นที่ของ : " + ChatColor.RED + owner_name);
+            sender.sendMessage(ChatColor.YELLOW + "โลก : " + ChatColor.RED + world);
+            sender.sendMessage(ChatColor.YELLOW + "พิกัด : " + ChatColor.RED + " (" + MathLibs.parseDouble(x_pos) + "," + MathLibs.parseDouble(y_pos) + "," + MathLibs.parseDouble(z_pos) + ")");
+            sender.sendMessage(ChatColor.GOLD + "คะแนนโหวดทั้งหมด : " + ChatColor.WHITE + ChatColor.BOLD + score.toString());
+            TextComponent clickVote = new TextComponent(">>>>>>>>>>> !! โหวด !! <<<<<<<<<<");
             clickVote.setColor(net.md_5.bungee.api.ChatColor.AQUA);
             clickVote.setBold(true);
             clickVote.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/pv vote " + plot_id));
@@ -197,7 +201,7 @@ public class DatabaseHandler {
                             .create()));
             sender.sendMessage(ChatColor.GOLD + "ต้องการโหวดให้กับ " + owner_name + " คลิกด้านล่าง ");
             sender.spigot().sendMessage(clickVote);
-            sender.sendMessage(ChatColor.GREEN + "=====================================================");
+            sender.sendMessage(ChatColor.GRAY + "=====================================================");
         } catch (SQLException e) {
             e.printStackTrace();
         }
