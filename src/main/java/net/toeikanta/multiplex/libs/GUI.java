@@ -9,14 +9,20 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 public class GUI {
-    public static ItemStack getTopPlotHead(String playerName,Integer order, Integer score, Location location, Integer plot_id) {
+    public static ItemStack getTopPlotHead(String playerName, Integer order, Integer score, Location location, Integer plot_id, Date regis_date) {
         ItemStack item = PlayerLibs.getPlayerHead(playerName);
         SkullMeta skull = (SkullMeta) item.getItemMeta();
         ArrayList<String> lore = new ArrayList<String>();
         lore.add(ChatColor.GREEN + "ID " + ChatColor.RED + plot_id);
         lore.add(ChatColor.GREEN + "โลก :: " + ChatColor.RED + location.getWorld().getName());
+        Long day = (new Date(System.currentTimeMillis()).getTime() - regis_date.getTime()) / (1000*60*60*24);
+        if(day == 0){
+            lore.add(ChatColor.GREEN + "ลงสมัครเมื่อ :: " + ChatColor.RED + "วันนี้") ;
+        }else
+            lore.add(ChatColor.GREEN + "ลงสมัครเมื่อ :: " + ChatColor.RED + day.toString() + ChatColor.GREEN + " วันก่อน") ;
         lore.add(ChatColor.GREEN + "พิกัด :: " + ChatColor.RED + " (" + MathLibs.parseDouble(location.getX()) + "," + MathLibs.parseDouble(location.getY()) + "," + MathLibs.parseDouble(location.getZ()) + ")");
         lore.add(ChatColor.GOLD + "คะแนนที่ได้ " + score.toString() + " คะแนน");
         lore.add(ChatColor.WHITE + "-----------------------");

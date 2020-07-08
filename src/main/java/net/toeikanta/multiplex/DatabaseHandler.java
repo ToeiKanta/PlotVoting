@@ -81,9 +81,10 @@ public class DatabaseHandler {
                 Double y_pos = rs.getDouble("y_pos");
                 Double z_pos = rs.getDouble("z_pos");
                 String world = rs.getString("world");
+                Date regis_date = rs.getDate("regis_date");
                 World w = Bukkit.getWorld(world);
                 Location location = new Location(w,x_pos,y_pos,z_pos);
-                topHeads[i++] = GUI.getTopPlotHead(owner_name, i ,score, location, plot_id);
+                topHeads[i++] = GUI.getTopPlotHead(owner_name, i ,score, location, plot_id,regis_date);
             }
             Inventory top = GUI.getTopPlotGUI(topHeads, sender, type_name);
             sender.openInventory(top);
@@ -104,7 +105,7 @@ public class DatabaseHandler {
             while (rs.next()) {
                 sender.sendMessage(
                         (i++) + ", name: " +
-                        rs.getString("name") + ", closed: " +
+                        rs.getString("type_name") + ", closed: " +
                         rs.getBoolean("closed") + ", start_date: " +
                         rs.getDate("start_date"));
             }
@@ -116,10 +117,10 @@ public class DatabaseHandler {
     public void registerPlot(String type_name, Player sender){
         if(!isTypeExists(type_name)){
             sender.sendMessage(ChatColor.RED + "Type invalid");
-           return;
+            return;
         }
 
-        String sql = "INSERT INTO plots(x_pos,y_pos,owner_name,type_name,score,world,z_pos) VALUES(?,?,?,?,?,?,?)";
+        String sql = "INSERT INTO plots(x_pos,y_pos,owner_name,type_name,score,world,z_pos,regis_date) VALUES(?,?,?,?,?,?,?,?)";
 
         try (Connection conn = DriverManager.getConnection(connUrl);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -130,7 +131,7 @@ public class DatabaseHandler {
             pstmt.setInt(5, 0);
             pstmt.setString(6, sender.getLocation().getWorld().getName());
             pstmt.setDouble(7, sender.getLocation().getZ());
-
+            pstmt.setDate(8, new Date(System.currentTimeMillis()));
             pstmt.executeUpdate();
             sender.sendMessage("register building with type '" + type_name +"' completed");
         } catch (SQLException e) {
@@ -159,7 +160,7 @@ public class DatabaseHandler {
 
     private boolean isTypeExists(String type_name){
         //check plot id exist
-        String sql = "SELECT COUNT(*) AS count FROM types WHERE name = " + type_name;
+        String sql = "SELECT COUNT(*) AS count FROM types WHERE type_name = '" + type_name + "'";
 
         try (Connection conn = DriverManager.getConnection(connUrl);
              Statement stm = conn.createStatement()) {
@@ -206,10 +207,12 @@ public class DatabaseHandler {
             Double x_pos = pos.getDouble("x_pos");
             Double y_pos = pos.getDouble("y_pos");
             Double z_pos = pos.getDouble("z_pos");
+            Date regis_date = pos.getDate("regis_date");
             sender.teleport(new Location(w, x_pos, y_pos, z_pos));
             sender.playSound(sender.getLocation(),Sound.ENTITY_ENDERMAN_TELEPORT,100f,1f);
             sender.sendMessage(ChatColor.GRAY + "============== PlotVoting by MC-Multiplex ===========");
             sender.sendMessage(ChatColor.YELLOW + "ประเภทสิ่งก่อสร้าง : " + ChatColor.RED + type_name);
+            sender.sendMessage(ChatColor.YELLOW + "ลงสมัครเมื่อวันที่ : " + ChatColor.RED + regis_date);
             sender.sendMessage(ChatColor.YELLOW + "ทำการวาร์ปไปที่พื้นที่ " + ChatColor.RED + " ID " + plot_id.toString() + ChatColor.YELLOW +" สำเร็จแล้ว");
             sender.sendMessage(ChatColor.YELLOW + "พื้นที่ของ : " + ChatColor.RED + owner_name);
             sender.sendMessage(ChatColor.YELLOW + "โลก : " + ChatColor.RED + world);
@@ -270,7 +273,7 @@ public class DatabaseHandler {
     }
 
     public void addType(String type_name, Player sender) {
-        String sql = "INSERT INTO types(name,start_date,closed) VALUES(?,?,?)";
+        String sql = "INSERT INTO types(type_name,start_date,closed) VALUES(?,?,?)";
 
         try (Connection conn = DriverManager.getConnection(connUrl);
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -288,7 +291,7 @@ public class DatabaseHandler {
     public void createInitTables(){
         // SQL statement for creating a new table
         String types = "CREATE TABLE IF NOT EXISTS types (\n"
-                + "	name text NOT NULL PRIMARY KEY,\n"
+                + "	type_name text NOT NULL PRIMARY KEY,\n"
                 + "	start_date date NOT NULL,\n"
                 + "	closed boolean NOT NULL\n"
                 + ");";
@@ -299,10 +302,11 @@ public class DatabaseHandler {
                 + "	z_pos real NOT NULL,\n"
                 + "	world text NOT NULL,\n"
                 + "	score integer NOT NULL,\n"
+                + "regis_date date NOT NULL,\n"
                 + "owner_name text NOT NULL,"
                 + "type_name text NOT NULL,"
                 + " FOREIGN KEY (type_name)\n"
-                + "   REFERENCES types (name)\n"
+                + "   REFERENCES types (type_name)\n"
                 + "     ON UPDATE CASCADE\n"
                 + "     ON DELETE CASCADE"
                 + ");";
