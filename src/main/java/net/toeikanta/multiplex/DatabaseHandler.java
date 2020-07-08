@@ -195,6 +195,10 @@ public class DatabaseHandler {
             sender.sendMessage("Plot id invalid.");
             return;
         }
+        if(!Libs.isWorldAllowed(sender.getLocation().getWorld().getName())){
+            sender.sendMessage("การวาร์ปจำเป็นต้องอยู่ในโลกสร้างสรรค์ หรือโลกสร้างบ้านก่อน");
+            return;
+        }
         String sql = "SELECT * FROM plots WHERE id = " + plot_id;
         try (Connection conn = DriverManager.getConnection(connUrl);
              Statement stmt = conn.createStatement();

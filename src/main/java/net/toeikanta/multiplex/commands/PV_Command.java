@@ -46,7 +46,7 @@ public class PV_Command implements CommandExecutor {
                         if(Libs.isWorldAllowed(currentWorld)){
                             plotVoting.db.plotTp(Integer.parseInt(args[1]),player);
                         }else{
-                            player.sendMessage(ChatColor.RED + "โลกนี้ไม่ได้รับอนุญาตให้ใช้คำสั่งนี้ได้");
+                            player.sendMessage(ChatColor.RED + "การวาร์ปจำเป็นต้องอยู่ในโลกสร้างสรรค์ หรือโลกสร้างบ้านก่อน");
                         }
                     }else if(args[0].equalsIgnoreCase(votePlot)){
                         plotVoting.db.votePlot(Integer.parseInt(args[1]),player);
