@@ -1,6 +1,7 @@
 package net.toeikanta.multiplex.commands;
 
 import net.toeikanta.multiplex.PlotVoting;
+import net.toeikanta.multiplex.libs.Libs;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -21,7 +22,6 @@ public class PV_Command implements CommandExecutor {
     String votePlot = "vote";
     String plotTP = "tp";
     String removePlot = "remove";
-    static String creative_world_name = "plot_world";
 
     public PV_Command(PlotVoting plotVoting){
         this.plotVoting = plotVoting;
@@ -33,19 +33,20 @@ public class PV_Command implements CommandExecutor {
             Player player = (Player) sender;
             if (label.equalsIgnoreCase("pv") || label.equalsIgnoreCase("plotvote") || label.equalsIgnoreCase("pvote")) {
                 try {
+                    String currentWorld = player.getLocation().getWorld().getName();
                     if(args[0].equalsIgnoreCase(registerPlot)){
-                        if(player.getLocation().getWorld().getName().equals(creative_world_name)){
+                        if(Libs.isWorldAllowed(currentWorld)){
                             plotVoting.db.registerPlot(args[1],player);
                         }else{
-                            player.sendMessage(ChatColor.RED + "คำสั่งนี้ใช้ได้เฉพาะโลกสร้างสรรค์เท่านั้น (creative_world)");
+                            player.sendMessage(ChatColor.RED + "โลกนี้ไม่ได้รับอนุญาตให้ใช้คำสั่งนี้ได้");
                         }
                     }else if(args[0].equalsIgnoreCase(topPlot)){
                         plotVoting.db.getTopPlotByType(args[1],player);
                     }else if(args[0].equalsIgnoreCase(plotTP)){
-                        if(player.getLocation().getWorld().getName().equals(creative_world_name)){
+                        if(Libs.isWorldAllowed(currentWorld)){
                             plotVoting.db.plotTp(Integer.parseInt(args[1]),player);
                         }else{
-                            player.sendMessage(ChatColor.RED + "คำสั่งนี้ใช้ได้เฉพาะโลกสร้างสรรค์เท่านั้น (creative_world)");
+                            player.sendMessage(ChatColor.RED + "โลกนี้ไม่ได้รับอนุญาตให้ใช้คำสั่งนี้ได้");
                         }
                     }else if(args[0].equalsIgnoreCase(votePlot)){
                         plotVoting.db.votePlot(Integer.parseInt(args[1]),player);

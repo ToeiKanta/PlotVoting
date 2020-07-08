@@ -1,1 +1,2 @@
 name: "PlotVoting"
+world_whitelist: ["creative_world","plot_world","home_world"]

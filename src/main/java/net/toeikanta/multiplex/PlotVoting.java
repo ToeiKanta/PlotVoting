@@ -7,6 +7,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 public final class PlotVoting extends JavaPlugin {
     public DatabaseHandler db;
+    public static PlotVoting plugin;
 
     @Override
     public void onEnable() {
@@ -22,6 +23,7 @@ public final class PlotVoting extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new ClickEvent(this), this);
         Logger.print("enabled " + getConfig().getString("name") + " plugin!");
         this.db = new DatabaseHandler(this);
+        plugin = this;
     }
 
     @Override
