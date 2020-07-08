@@ -6,6 +6,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.toeikanta.multiplex.libs.GUI;
+import net.toeikanta.multiplex.libs.Libs;
 import net.toeikanta.multiplex.libs.Logger;
 import net.toeikanta.multiplex.libs.MathLibs;
 import org.bukkit.*;
@@ -200,6 +201,10 @@ public class DatabaseHandler {
         ) {
             ResultSet pos = stmt.executeQuery(sql);
             String world = pos.getString("world");
+            if(!Libs.isWorldAllowed(world)){
+               sender.sendMessage("ท่านไม่ได้รับอนุญาตให้วาร์ปไปโลกแห่งนั้นผ่่านวิธีนี้");
+               return;
+            }
             String owner_name = pos.getString("owner_name");
             String type_name = pos.getString("type_name");
             Integer score = pos.getInt("score");
