@@ -115,9 +115,32 @@ public class DatabaseHandler {
         }
     }
 
+    private Boolean isExceedLimitRegis(String type_name, Player player){
+        Integer limit = PlotVoting.plugin.getConfig().getInt("limit_regis_plot");
+        try(
+                Connection conn = DriverManager.getConnection(connUrl);
+                Statement stmt = conn.createStatement();
+        ){
+            ResultSet res = stmt.executeQuery("SELECT COUNT(*) AS count FROM plots WHERE owner_name = '"+player.getName()+"' AND type_name = '" +type_name+"'");
+            if(res.getInt("count") >= limit) {
+                return true;
+            }else{
+                return false;
+            }
+        }catch(Exception e){
+            Logger.print(e.getMessage());
+            return true;
+        }
+    }
+
     public void registerPlot(String type_name, Player sender){
         if(!isTypeExists(type_name)){
             sender.sendMessage(ChatColor.RED + "Type invalid");
+            return;
+        }
+        if(isExceedLimitRegis(type_name, sender)){
+            Integer limit = PlotVoting.plugin.getConfig().getInt("limit_regis_plot");
+            sender.sendMessage(ChatColor.RED + "ไม่สามารถลงเพิ่มได้แล้ว //ท่านสามารถลงสมัครได้เพียง " + limit + " ที่ ต่อ 1 ประเภท เท่านั้น!!");
             return;
         }
 
